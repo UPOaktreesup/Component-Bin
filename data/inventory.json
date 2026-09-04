@@ -7,5 +7,21 @@
       "cols": 8
     }
   ],
-  "components": []
+  "components": [
+    {
+      "id": "mtmkujyzt37kut",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 0,
+      "name": "fdsfsdfsdfsdf",
+      "type": "Resistor",
+      "value": "",
+      "package": "",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    }
+  ]
 }
