@@ -106,7 +106,7 @@
       "name": "",
       "type": "Resistor",
       "value": "33R",
-      "package": "",
+      "package": "0805",
       "amount": 1,
       "manufacturer": "",
       "description": "",
