@@ -944,6 +944,12 @@ function updateGhStatus(){
   el.textContent = dirty ? 'unsaved changes' : 'synced';
   el.className = dirty ? 'dirty' : 'ok';
 }
+function setGhError(msg){
+  const el = document.getElementById('gh-status');
+  el.textContent = msg;
+  el.className = 'dirty';
+  el.title = msg;
+}
 
 document.getElementById('btn-gh-settings').addEventListener('click', openGhSettings);
 function openGhSettings(){
@@ -974,7 +980,7 @@ document.getElementById('btn-gh-save-settings').addEventListener('click', ()=>{
 });
 document.getElementById('btn-gh-load').addEventListener('click', async ()=>{
   readGhSettingsForm();
-  await loadFromGithub();
+  await loadFromGithub(false);
 });
 document.getElementById('btn-clear-local').addEventListener('click', ()=>{
   if(!confirm('Clear all locally-held inventory data in this browser? Anything already saved to GitHub is unaffected.')) return;
@@ -984,16 +990,25 @@ document.getElementById('btn-clear-local').addEventListener('click', ()=>{
 
 function ghApiBase(){ return `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.path}`; }
 
-async function loadFromGithub(){
-  if(!gh.owner || !gh.repo || !gh.token){ alert('Fill in owner, repo and token first.'); return; }
+async function loadFromGithub(silent){
+  if(!gh.owner || !gh.repo || !gh.token){ if(!silent) alert('Fill in owner, repo and token first.'); return; }
   try{
     const res = await fetch(`${ghApiBase()}?ref=${encodeURIComponent(gh.branch)}`, {
       headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json' }
     });
     if(res.status===404){
+      if(silent){
+        setGhError('inventory file not found yet');
+        return;
+      }
       if(confirm('No inventory file found at that path yet. Create it now with an empty inventory?')){
         await saveToGithub(true);
       }
+      return;
+    }
+    if(res.status===401){
+      setGhError('GitHub token rejected (401) — open GitHub sync and re-enter it');
+      if(!silent) alert('GitHub rejected this token (401 Bad credentials). Open "GitHub sync…", re-paste a valid token, and click Save settings.');
       return;
     }
     if(!res.ok) throw new Error(`GitHub responded ${res.status}`);
@@ -1009,9 +1024,10 @@ async function loadFromGithub(){
     resetView();
     renderSidebar(); renderGrid(); renderSheet();
     document.getElementById('gh-settings-backdrop').style.display = 'none';
-    alert('Loaded from GitHub.');
+    if(!silent) alert('Loaded from GitHub.');
   } catch(err){
-    alert('Could not load from GitHub: ' + err.message);
+    setGhError(err.message);
+    if(!silent) alert('Could not load from GitHub: ' + err.message);
   }
 }
 
@@ -1125,7 +1141,7 @@ function init(){
   renderGrid();
 
   if(gh.owner && gh.repo && gh.token){
-    loadFromGithub();
+    loadFromGithub(true);
   }
 }
 init();
