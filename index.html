@@ -21,7 +21,24 @@
     --red: #d9614f;
     --cell-empty: #10160f;
     --cell-fill: #1a2822;
+    --dot: #1a2620;
     --radius: 3px;
+  }
+  html[data-theme="light"]{
+    --bg: #f2f0e8;
+    --panel: #ffffff;
+    --panel-2: #f4f2ea;
+    --line: #dcd8c9;
+    --line-soft: #e8e5d9;
+    --ink: #201f1a;
+    --ink-dim: #4f4c40;
+    --ink-faint: #8a8570;
+    --amber: #c06a1f;
+    --amber-dim: #f0dcb8;
+    --red: #b5392a;
+    --cell-empty: #eae7dc;
+    --cell-fill: #e3e6da;
+    --dot: #ded9c8;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -29,6 +46,7 @@
     background: var(--bg); color: var(--ink);
     font-family: 'Inter', -apple-system, sans-serif;
     overflow: hidden;
+    transition: background-color .25s ease, color .25s ease;
   }
   ::selection{ background: var(--amber-dim); }
   ::-webkit-scrollbar{ width: 10px; height: 10px; }
@@ -144,7 +162,7 @@
   #canvas-wrap{
     flex: 1; position: relative; overflow: hidden;
     background:
-      radial-gradient(circle at 1px 1px, #1a2620 1px, transparent 1px) 0 0/24px 24px,
+      radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1px) 0 0/24px 24px,
       var(--bg);
     cursor: grab;
   }
@@ -278,6 +296,13 @@
     </div>
     <div id="box-list"></div>
     <div id="sidebar-footer">
+      <label style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;">Theme</label>
+      <select id="theme-mode" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:7px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;">
+        <option value="dark" style="background:#182019;color:#e9efe9;">Always dark</option>
+        <option value="light" style="background:#182019;color:#e9efe9;">Always light</option>
+        <option value="system" style="background:#182019;color:#e9efe9;">Match system</option>
+        <option value="time" style="background:#182019;color:#e9efe9;">Match time of day</option>
+      </select>
       <button class="btn btn-ghost" id="btn-gh-settings">GitHub sync…</button>
     </div>
   </div>
@@ -369,7 +394,13 @@
    ============================================================ */
 const COMPONENT_TYPES = ["Resistor","Capacitor","Inductor","MOSFET","Diode","IC","Connector","Other"];
 const RCL_TYPES = new Set(["Resistor","Capacitor","Inductor"]);
+const TYPE_ABBR = { Resistor:'RES', Capacitor:'CAP', Inductor:'IND' };
 const CELL_COLORS = ["#1a2822","#2a2216","#241a28","#16222a","#2a1a1a","#1a2a26","#26261a"];
+
+function primaryPlaceholder(type){
+  const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
+  return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
+}
 
 let state = {
   boxes: [],       // {id, name, rows, cols}
@@ -385,7 +416,7 @@ let ghFileSha = null;
 let view = { zoom: 1, panX: 0, panY: 0 };
 let isPanning = false, panStart = {x:0,y:0}, panOrigin = {x:0,y:0};
 
-const CELL_W = 168, CELL_H = 86, CELL_GAP = 8, GRID_PAD = 60;
+const CELL_W = 176, CELL_H = 132, CELL_GAP = 8, GRID_PAD = 60;
 
 /* ============================================================
    UTIL
@@ -566,17 +597,10 @@ function renderGrid(){
         <rect class="cell-rect ${filledClass}" x="${x}" y="${y}" width="${CELL_W}" height="${CELL_H}" rx="3" style="fill:${fill}"></rect>`;
       if(comp){
         const isRCL = RCL_TYPES.has(comp.type);
-        const primaryText = isRCL ? (comp.value || '') : (comp.name || '');
-        const secondaryText = comp.package || '';
-        const lines = [];
-        if(primaryText) lines.push({ text: primaryText, cls:'cell-primary', size:14 });
-        if(secondaryText) lines.push({ text: secondaryText, cls:'cell-secondary', size:10.5 });
-        if(lines.length===2){
-          cellsHtml += `<text class="${lines[0].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="${lines[0].size}">${escapeXml(truncate(lines[0].text,16))}</text>`;
-          cellsHtml += `<text class="${lines[1].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="${lines[1].size}">${escapeXml(truncate(lines[1].text,16))}</text>`;
-        } else if(lines.length===1){
-          cellsHtml += `<text class="${lines[0].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy}" font-size="${lines[0].size}">${escapeXml(truncate(lines[0].text,16))}</text>`;
-        }
+        const primaryText = isRCL ? (comp.value || primaryPlaceholder(comp.type)) : (comp.name || primaryPlaceholder(comp.type));
+        const secondaryText = comp.package || 'NO_PACKAGE';
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="14">${escapeXml(truncate(primaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="10.5">${escapeXml(truncate(secondaryText,16))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
@@ -933,7 +957,7 @@ function openGhSettings(){
 document.getElementById('btn-gh-cancel').addEventListener('click', ()=>{
   document.getElementById('gh-settings-backdrop').style.display = 'none';
 });
-document.getElementById('btn-gh-save-settings').addEventListener('click', ()=>{
+function readGhSettingsForm(){
   gh = {
     owner: document.getElementById('gh-owner').value.trim(),
     repo: document.getElementById('gh-repo').value.trim(),
@@ -943,9 +967,13 @@ document.getElementById('btn-gh-save-settings').addEventListener('click', ()=>{
   };
   localStorage.setItem('gh_settings', JSON.stringify(gh));
   updateGhStatus();
+}
+document.getElementById('btn-gh-save-settings').addEventListener('click', ()=>{
+  readGhSettingsForm();
   document.getElementById('gh-settings-backdrop').style.display = 'none';
 });
 document.getElementById('btn-gh-load').addEventListener('click', async ()=>{
+  readGhSettingsForm();
   await loadFromGithub();
 });
 document.getElementById('btn-clear-local').addEventListener('click', ()=>{
@@ -1033,6 +1061,43 @@ window.addEventListener('keydown', (e)=>{
   btn.addEventListener('click', ()=>saveToGithub(false));
   topbar.insertBefore(btn, document.getElementById('gh-status'));
 })();
+
+/* ============================================================
+   THEME
+   ============================================================ */
+let themeMode = localStorage.getItem('theme_mode') || 'dark';
+const systemDarkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+function computeEffectiveTheme(){
+  if(themeMode === 'dark') return 'dark';
+  if(themeMode === 'light') return 'light';
+  if(themeMode === 'system'){
+    return (systemDarkQuery && !systemDarkQuery.matches) ? 'light' : 'dark';
+  }
+  if(themeMode === 'time'){
+    const hour = new Date().getHours();
+    return (hour >= 7 && hour < 19) ? 'light' : 'dark';
+  }
+  return 'dark';
+}
+function applyTheme(){
+  const effective = computeEffectiveTheme();
+  document.documentElement.setAttribute('data-theme', effective);
+}
+function setThemeMode(mode){
+  themeMode = mode;
+  localStorage.setItem('theme_mode', mode);
+  const sel = document.getElementById('theme-mode');
+  if(sel) sel.value = mode;
+  applyTheme();
+}
+document.getElementById('theme-mode').addEventListener('change', (e)=> setThemeMode(e.target.value));
+if(systemDarkQuery && systemDarkQuery.addEventListener){
+  systemDarkQuery.addEventListener('change', ()=>{ if(themeMode==='system') applyTheme(); });
+}
+setInterval(()=>{ if(themeMode==='time') applyTheme(); }, 5*60*1000);
+document.getElementById('theme-mode').value = themeMode;
+applyTheme();
 
 /* ============================================================
    ESCAPE HELPERS
