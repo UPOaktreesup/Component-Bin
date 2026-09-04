@@ -398,7 +398,7 @@ const CELL_COLORS = ["#1a2822","#2a2216","#241a28","#16222a","#2a1a1a","#1a2a26"
 
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
-  return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
+  return RCL_TYPES.has(type) ? `${abbr}_NOVALUE` : `${abbr}_NONAME`;
 }
 
 let state = {
@@ -992,7 +992,8 @@ function ghApiBase(){ return `https://api.github.com/repos/${gh.owner}/${gh.repo
 async function loadFromGithub(silent){
   if(!gh.owner || !gh.repo || !gh.token){ if(!silent) alert('Fill in owner, repo and token first.'); return; }
   try{
-    const res = await fetch(`${ghApiBase()}?ref=${encodeURIComponent(gh.branch)}`, {
+    const res = await fetch(`${ghApiBase()}?ref=${encodeURIComponent(gh.branch)}&_=${Date.now()}`, {
+      cache: 'no-store',
       headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json' }
     });
     if(res.status===404){
