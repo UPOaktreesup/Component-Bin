@@ -22,6 +22,36 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtmnajv0kzgf4t",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 1,
+      "name": "",
+      "type": "Resistor",
+      "value": "5mR",
+      "package": "2512",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmnasf8dkduou",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 2,
+      "name": "",
+      "type": "Resistor",
+      "value": "10mR",
+      "package": "2512",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
