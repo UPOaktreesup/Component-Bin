@@ -219,7 +219,7 @@
   .field-row:last-child{ border-bottom:none; }
   .field-label{ font-size:11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing:.06em; margin-bottom:4px; }
   .field-value{
-    font-size: 14px; color: var(--ink); font-family:'IBM Plex Mono',monospace;
+    font-size: 20px; color: var(--ink); font-family:'IBM Plex Mono',monospace;
     cursor: text; min-height: 20px; padding: 3px 4px; border-radius: 2px;
     word-break: break-word;
   }
@@ -598,8 +598,8 @@ function renderGrid(){
         const isRCL = RCL_TYPES.has(comp.type);
         const primaryText = isRCL ? (comp.value || primaryPlaceholder(comp.type)) : (comp.name || primaryPlaceholder(comp.type));
         const secondaryText = comp.package || 'NO_PACKAGE';
-        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="14">${escapeXml(truncate(primaryText,16))}</text>`;
-        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="10.5">${escapeXml(truncate(secondaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="20">${escapeXml(truncate(primaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="14">${escapeXml(truncate(secondaryText,16))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
