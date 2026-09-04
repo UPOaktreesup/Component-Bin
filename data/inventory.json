@@ -7,5 +7,21 @@
       "cols": 8
     }
   ],
-  "components": []
+  "components": [
+    {
+      "id": "mtmld04qm2s69s",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 0,
+      "name": "",
+      "type": "Resistor",
+      "value": "23213R",
+      "package": "0603",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    }
+  ]
 }
