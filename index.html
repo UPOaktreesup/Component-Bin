@@ -186,8 +186,8 @@
   .cell-rect{ fill: var(--cell-empty); stroke: var(--cell-stroke); stroke-width: 1; }
   .cell-rect.filled{ stroke: var(--cell-stroke); stroke-width: 1.5; }
   .cell-rect.hover{ stroke: var(--amber); stroke-width: 1.5; }
-  .cell-primary{ font-family:'IBM Plex Mono',monospace; font-weight:600; fill: var(--ink); }
-  .cell-secondary{ font-family:'IBM Plex Mono',monospace; font-weight:400; fill: var(--ink-faint); }
+  .cell-primary{ font-family:'IBM Plex Mono',monospace; font-weight:600; fill: var(--ink); letter-spacing: 0.6px; }
+  .cell-secondary{ font-family:'IBM Plex Mono',monospace; font-weight:400; fill: var(--ink-faint); letter-spacing: 0.5px; }
   .cell-coord{ font-family:'IBM Plex Mono',monospace; fill: var(--ink-faint); opacity:.35; }
   .cell-highlight{ animation: flashcell 1.4s ease-in-out 2; }
   @keyframes flashcell{
@@ -398,7 +398,7 @@ const CELL_COLORS = ["#5e8a72","#b0713f","#7c5a94","#4f7f9e","#a8524a","#4f9484"
 
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
-  return RCL_TYPES.has(type) ? `${abbr}_NO_VALUE` : `${abbr}_NO_NAME`;
+  return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
 }
 function contrastTextColor(hex){
   if(!hex) return null;
@@ -610,8 +610,8 @@ function renderGrid(){
         const customTextColor = comp.color ? contrastTextColor(comp.color) : null;
         const primaryStyle = customTextColor ? `style="fill:${customTextColor}"` : '';
         const secondaryStyle = customTextColor ? `style="fill:${customTextColor}" fill-opacity="0.72"` : '';
-        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="18" ${primaryStyle}>${escapeXml(truncate(primaryText,16))}</text>`;
-        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="13" ${secondaryStyle}>${escapeXml(truncate(secondaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="22" ${primaryStyle}>${escapeXml(truncate(primaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="17" ${secondaryStyle}>${escapeXml(truncate(secondaryText,16))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
@@ -755,14 +755,22 @@ function activateFieldEditor(el, f){
   }
   input.addEventListener('blur', finish);
   input.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter' && f.type!=='textarea'){ e.preventDefault(); input.blur(); }
-    else if(e.key==='Escape'){ renderModalBody(); }
-    else if(e.key==='Tab'){
+    if(e.key==='Enter'){
+      if(f.type==='textarea' && e.shiftKey) return; // allow newline in description
+      e.preventDefault();
+      input.removeEventListener('blur', finish);
+      finish();
+      closeModal();
+    } else if(e.key==='Escape'){
+      e.preventDefault();
+      input.removeEventListener('blur', finish);
+      closeModal(); // discard this field's in-progress edit and leave entirely
+    } else if(e.key==='Tab'){
       const currentIndex = FIELD_DEFS.findIndex(fd=>fd.key===f.key);
       const nextIndex = e.shiftKey ? currentIndex-1 : currentIndex+1;
       if(nextIndex>=0 && nextIndex<FIELD_DEFS.length){
         e.preventDefault();
-        input.removeEventListener('blur', finish); // avoid double-commit; finish() runs explicitly below
+        input.removeEventListener('blur', finish);
         finish();
         const nextField = FIELD_DEFS[nextIndex];
         const nextEl = document.querySelector(`.field-value[data-key="${nextField.key}"]`);
