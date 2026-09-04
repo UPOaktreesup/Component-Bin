@@ -19,8 +19,9 @@
     --amber: #e8974a;
     --amber-dim: #6b4a24;
     --red: #d9614f;
-    --cell-empty: #10160f;
-    --cell-fill: #1a2822;
+    --cell-empty: #131c17;
+    --cell-fill: #24402f;
+    --cell-stroke: #060907;
     --dot: #1a2620;
     --radius: 3px;
   }
@@ -36,8 +37,9 @@
     --amber: #c06a1f;
     --amber-dim: #f0dcb8;
     --red: #b5392a;
-    --cell-empty: #eae7dc;
-    --cell-fill: #e3e6da;
+    --cell-empty: #e6e1d0;
+    --cell-fill: #c9dfce;
+    --cell-stroke: #6b6450;
     --dot: #ded9c8;
   }
   * { box-sizing: border-box; }
@@ -181,8 +183,8 @@
   }
   svg#grid-svg{ width:100%; height:100%; display:block; }
 
-  .cell-rect{ fill: var(--cell-empty); stroke: var(--line); stroke-width: 1; }
-  .cell-rect.filled{ stroke: #33443a; }
+  .cell-rect{ fill: var(--cell-empty); stroke: var(--cell-stroke); stroke-width: 1; }
+  .cell-rect.filled{ stroke: var(--cell-stroke); stroke-width: 1.5; }
   .cell-rect.hover{ stroke: var(--amber); stroke-width: 1.5; }
   .cell-primary{ font-family:'IBM Plex Mono',monospace; font-weight:600; fill: var(--ink); }
   .cell-secondary{ font-family:'IBM Plex Mono',monospace; font-weight:400; fill: var(--ink-faint); }
