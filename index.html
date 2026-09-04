@@ -398,7 +398,7 @@ const CELL_COLORS = ["#5e8a72","#b0713f","#7c5a94","#4f7f9e","#a8524a","#4f9484"
 
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
-  return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
+  return RCL_TYPES.has(type) ? `${abbr}_NO_VALUE` : `${abbr}_NO_NAME`;
 }
 function contrastTextColor(hex){
   if(!hex) return null;
