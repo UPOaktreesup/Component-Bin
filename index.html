@@ -352,8 +352,8 @@
     </div>
     <div id="modal-body"></div>
     <div id="modal-foot">
-      <button class="btn btn-danger" id="btn-delete-component" style="margin-right:auto;">Delete</button>
-      <button class="btn btn-primary" id="btn-close-modal">Done</button>
+      <button class="btn btn-danger" id="btn-delete-component">Delete</button>
+      <button class="btn btn-primary" id="btn-close-modal" style="margin-left:auto;">Done</button>
     </div>
   </div>
 </div>
@@ -394,11 +394,20 @@
 const COMPONENT_TYPES = ["Resistor","Capacitor","Inductor","MOSFET","Diode","IC","Connector","Other"];
 const RCL_TYPES = new Set(["Resistor","Capacitor","Inductor"]);
 const TYPE_ABBR = { Resistor:'RES', Capacitor:'CAP', Inductor:'IND' };
-const CELL_COLORS = ["#1a2822","#2a2216","#241a28","#16222a","#2a1a1a","#1a2a26","#26261a"];
+const CELL_COLORS = ["#5e8a72","#b0713f","#7c5a94","#4f7f9e","#a8524a","#4f9484","#b3944a","#707a8a"];
 
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
   return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
+}
+function contrastTextColor(hex){
+  if(!hex) return null;
+  let h = hex.replace('#','');
+  if(h.length===3) h = h.split('').map(c=>c+c).join('');
+  const r = parseInt(h.substr(0,2),16)/255, g = parseInt(h.substr(2,2),16)/255, b = parseInt(h.substr(4,2),16)/255;
+  const lin = c => c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+  const lum = 0.2126*lin(r) + 0.7152*lin(g) + 0.0722*lin(b);
+  return lum > 0.42 ? '#171b18' : '#f4f7f3';
 }
 
 let state = {
@@ -598,8 +607,11 @@ function renderGrid(){
         const isRCL = RCL_TYPES.has(comp.type);
         const primaryText = isRCL ? (comp.value || primaryPlaceholder(comp.type)) : (comp.name || primaryPlaceholder(comp.type));
         const secondaryText = comp.package || 'NO_PACKAGE';
-        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="18">${escapeXml(truncate(primaryText,16))}</text>`;
-        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="13">${escapeXml(truncate(secondaryText,16))}</text>`;
+        const customTextColor = comp.color ? contrastTextColor(comp.color) : null;
+        const primaryStyle = customTextColor ? `style="fill:${customTextColor}"` : '';
+        const secondaryStyle = customTextColor ? `style="fill:${customTextColor}" fill-opacity="0.72"` : '';
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="18" ${primaryStyle}>${escapeXml(truncate(primaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="13" ${secondaryStyle}>${escapeXml(truncate(secondaryText,16))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
@@ -682,8 +694,11 @@ function openComponentModal(comp, boxId, row, col){
   };
   document.getElementById('modal-head-title').textContent = modalIsNew ? 'New component' : (modalComponent.name || 'Component');
   document.getElementById('btn-delete-component').style.display = modalIsNew ? 'none' : 'inline-block';
-  renderModalBody();
   document.getElementById('modal-backdrop').classList.add('open');
+  renderModalBody();
+  const valueField = FIELD_DEFS.find(fd=>fd.key==='value');
+  const valueEl = document.querySelector('.field-value[data-key="value"]');
+  if(valueEl && valueField) activateFieldEditor(valueEl, valueField);
 }
 
 function renderModalBody(){
@@ -741,7 +756,21 @@ function activateFieldEditor(el, f){
   input.addEventListener('blur', finish);
   input.addEventListener('keydown', (e)=>{
     if(e.key==='Enter' && f.type!=='textarea'){ e.preventDefault(); input.blur(); }
-    if(e.key==='Escape'){ renderModalBody(); }
+    else if(e.key==='Escape'){ renderModalBody(); }
+    else if(e.key==='Tab'){
+      const currentIndex = FIELD_DEFS.findIndex(fd=>fd.key===f.key);
+      const nextIndex = e.shiftKey ? currentIndex-1 : currentIndex+1;
+      if(nextIndex>=0 && nextIndex<FIELD_DEFS.length){
+        e.preventDefault();
+        input.removeEventListener('blur', finish); // avoid double-commit; finish() runs explicitly below
+        finish();
+        const nextField = FIELD_DEFS[nextIndex];
+        const nextEl = document.querySelector(`.field-value[data-key="${nextField.key}"]`);
+        if(nextEl) activateFieldEditor(nextEl, nextField);
+      } else {
+        finish(); // at the first/last field — commit and let focus move naturally (e.g. to Delete/Done)
+      }
+    }
   });
 }
 
