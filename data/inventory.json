@@ -37,6 +37,21 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtml2tyf1nrc5b",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 2,
+      "name": "dsadasd",
+      "type": "Inductor",
+      "value": "27H",
+      "package": "",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
