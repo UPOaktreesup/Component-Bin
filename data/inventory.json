@@ -712,6 +712,21 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtmz4szlu3tkbq",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 4,
+      "name": "",
+      "type": "Resistor",
+      "value": "",
+      "package": "",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
