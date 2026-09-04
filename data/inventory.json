@@ -22,6 +22,21 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtml1ukuuiocq2",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 1,
+      "name": "",
+      "type": "Resistor",
+      "value": "",
+      "package": "2512",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
