@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Component Bins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0c1210;
+    --panel: #131b18;
+    --panel-2: #182019;
+    --line: #253028;
+    --line-soft: #1c251f;
+    --ink: #e9efe9;
+    --ink-dim: #a9b6ac;
+    --ink-faint: #5c6b62;
+    --amber: #e8974a;
+    --amber-dim: #6b4a24;
+    --red: #d9614f;
+    --cell-empty: #10160f;
+    --cell-fill: #1a2822;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  ::selection{ background: var(--amber-dim); }
+  ::-webkit-scrollbar{ width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track{ background: transparent; }
+  ::-webkit-scrollbar-thumb{ background: var(--line); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover{ background: var(--ink-faint); }
+
+  #app{ display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    min-height: 0;
+  }
+  #sidebar-header{
+    padding: 18px 16px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  #sidebar-title{
+    font-weight: 700; font-size: 15px; letter-spacing: .01em;
+    display:flex; align-items:center; gap:8px;
+  }
+  #sidebar-title .dot{ width:7px; height:7px; background:var(--amber); border-radius:1px; flex-shrink:0; }
+  #box-list{
+    flex: 1; overflow-y: auto; padding: 8px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .box-item{
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 10px; border-radius: var(--radius);
+    cursor: pointer; font-size: 13.5px; color: var(--ink-dim);
+    border: 1px solid transparent;
+  }
+  .box-item:hover{ background: var(--panel-2); color: var(--ink); }
+  .box-item.active{
+    background: var(--panel-2); color: var(--ink);
+    border-color: var(--line);
+    box-shadow: inset 2px 0 0 var(--amber);
+  }
+  .box-item.drag-over{ outline: 1px dashed var(--amber); outline-offset: -3px; }
+  .box-order{
+    font-family:'IBM Plex Mono',monospace; font-size: 11px; color: var(--ink-faint);
+    width: 16px; text-align: right; flex-shrink: 0;
+  }
+  .box-info{ flex: 1; min-width: 0; display:flex; flex-direction:column; gap: 2px; }
+  .box-name{ overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .box-item .meta{ font-size: 11px; color: var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+  .box-actions{ display:flex; gap: 2px; opacity: 0; flex-shrink: 0; }
+  .box-item:hover .box-actions{ opacity: 1; }
+  .box-actions span{
+    font-size: 13px; color: var(--ink-faint); padding: 2px 5px; border-radius: 2px; cursor: pointer;
+  }
+  .box-actions span:hover{ color: var(--amber); background: var(--panel); }
+  .box-actions .trash:hover{ color: var(--red); }
+  #sidebar-header{ display:flex; flex-direction:column; gap:10px; }
+  #sidebar-footer{ padding: 12px; border-top: 1px solid var(--line); display:flex; flex-direction:column; gap:8px; }
+  .btn{
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--ink);
+    padding: 8px 12px; border-radius: var(--radius); font-size: 13px;
+    cursor: pointer; font-family: inherit; text-align:center;
+  }
+  .btn:hover{ border-color: var(--ink-faint); }
+  .btn-primary{ background: var(--amber); border-color: var(--amber); color: #1a1206; font-weight:600; }
+  .btn-primary:hover{ filter: brightness(1.08); }
+  .btn-danger{ color: var(--red); }
+  .btn-small{ padding: 5px 9px; font-size: 12px; }
+  .btn-ghost{ background: transparent; border-color: transparent; color: var(--ink-dim); }
+  .btn-ghost:hover{ color: var(--ink); background: var(--panel-2); }
+
+  /* ---------- Main ---------- */
+  #main{ position: relative; display:flex; flex-direction:column; min-width:0; }
+
+  #topbar{
+    display:flex; align-items:center; gap:12px;
+    padding: 10px 18px; border-bottom: 1px solid var(--line);
+    background: var(--panel); z-index: 5;
+  }
+  #view-toggle{ display:flex; gap:4px; background:var(--panel-2); padding:3px; border-radius:var(--radius); border:1px solid var(--line); }
+  #view-toggle button{
+    background:transparent; border:none; color:var(--ink-faint); padding:6px 12px;
+    font-family:inherit; font-size:12.5px; border-radius:2px; cursor:pointer;
+  }
+  #view-toggle button.active{ background: var(--panel); color: var(--ink); }
+
+  #search-wrap{ position: relative; flex: 1; max-width: 420px; }
+  #search-input{
+    width:100%; background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    padding: 8px 12px 8px 30px; border-radius: var(--radius); font-size: 13px; font-family: inherit;
+  }
+  #search-input:focus{ outline:none; border-color: var(--amber); }
+  #search-icon{ position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--ink-faint); font-size:13px; pointer-events:none; }
+  #search-results{
+    position:absolute; top:calc(100% + 6px); left:0; right:0;
+    background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius);
+    max-height: 320px; overflow-y:auto; display:none; z-index: 50;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  }
+  #search-results.open{ display:block; }
+  .sr-item{ padding:9px 12px; cursor:pointer; border-bottom:1px solid var(--line-soft); font-size:13px; }
+  .sr-item:last-child{ border-bottom:none; }
+  .sr-item:hover{ background: var(--panel); }
+  .sr-name{ font-family:'IBM Plex Mono',monospace; color:var(--ink); }
+  .sr-sub{ color:var(--ink-faint); font-size:11.5px; margin-top:2px; }
+  .sr-empty{ padding:14px 12px; color:var(--ink-faint); font-size:13px; text-align:center; }
+
+  #gh-status{ font-size: 11.5px; color: var(--ink-faint); font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
+  #gh-status.dirty{ color: var(--amber); }
+  #gh-status.ok{ color: #6fbf8c; }
+
+  /* ---------- Canvas (grid view) ---------- */
+  #canvas-wrap{
+    flex: 1; position: relative; overflow: hidden;
+    background:
+      radial-gradient(circle at 1px 1px, #1a2620 1px, transparent 1px) 0 0/24px 24px,
+      var(--bg);
+    cursor: grab;
+  }
+  #canvas-wrap.panning{ cursor: grabbing; }
+  #box-label{
+    position:absolute; top:20px; left:24px; z-index: 4;
+    font-weight:700; font-size:26px; letter-spacing:-0.01em;
+    color: var(--ink); pointer-events:none;
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  }
+  #box-label .n{ color: var(--amber); }
+  #zoom-hint{
+    position:absolute; bottom:16px; right:18px; z-index:4;
+    font-size:11px; color: var(--ink-faint); font-family:'IBM Plex Mono',monospace;
+    background: rgba(19,27,24,.8); padding:6px 10px; border-radius:var(--radius); border:1px solid var(--line);
+  }
+  svg#grid-svg{ width:100%; height:100%; display:block; }
+
+  .cell-rect{ fill: var(--cell-empty); stroke: var(--line); stroke-width: 1; }
+  .cell-rect.filled{ stroke: #33443a; }
+  .cell-rect.hover{ stroke: var(--amber); stroke-width: 1.5; }
+  .cell-primary{ font-family:'IBM Plex Mono',monospace; font-weight:600; fill: var(--ink); }
+  .cell-secondary{ font-family:'IBM Plex Mono',monospace; font-weight:400; fill: var(--ink-faint); }
+  .cell-coord{ font-family:'IBM Plex Mono',monospace; fill: var(--ink-faint); opacity:.35; }
+  .cell-highlight{ animation: flashcell 1.4s ease-in-out 2; }
+  @keyframes flashcell{
+    0%,100%{ stroke: var(--amber); stroke-width: 1.5; }
+    50%{ stroke: var(--amber); stroke-width: 3.5; }
+  }
+
+  /* ---------- Modal ---------- */
+  #modal-backdrop{
+    position:fixed; inset:0; background: rgba(6,10,8,.55);
+    display:none; align-items:center; justify-content:center; z-index: 100;
+  }
+  #modal-backdrop.open{ display:flex; }
+  #modal{
+    width: 380px; max-width: calc(100vw - 40px);
+    background: var(--panel); border:1px solid var(--line); border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    overflow: hidden;
+  }
+  #modal-head{
+    padding: 14px 18px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  #modal-head-title{ font-weight:600; font-size:14px; }
+  #modal-close{ cursor:pointer; color:var(--ink-faint); font-size:18px; line-height:1; }
+  #modal-close:hover{ color: var(--ink); }
+  #modal-body{ padding: 6px 18px 14px; max-height: 60vh; overflow-y:auto; }
+  .field-row{ padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+  .field-row:last-child{ border-bottom:none; }
+  .field-label{ font-size:11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing:.06em; margin-bottom:4px; }
+  .field-value{
+    font-size: 14px; color: var(--ink); font-family:'IBM Plex Mono',monospace;
+    cursor: text; min-height: 20px; padding: 3px 4px; border-radius: 2px;
+    word-break: break-word;
+  }
+  .field-value:hover{ background: var(--panel-2); }
+  .field-value.empty{ color: var(--ink-faint); font-style: italic; font-family:'Inter',sans-serif; }
+  .field-value input, .field-value textarea, .field-value select{
+    width:100%; background: var(--panel-2); border:1px solid var(--amber); color:var(--ink);
+    font-family:'IBM Plex Mono',monospace; font-size:14px; padding:5px 6px; border-radius:2px;
+  }
+  .field-value textarea{ resize: vertical; min-height:50px; font-family:'Inter',sans-serif; }
+  .swatch-row{ display:flex; gap:6px; margin-top:2px; flex-wrap:wrap; }
+  .swatch{ width:20px; height:20px; border-radius:3px; cursor:pointer; border:1px solid var(--line); }
+  .swatch.selected{ outline: 2px solid var(--amber); outline-offset:1px; }
+  #modal-foot{ padding: 12px 18px 16px; display:flex; gap:8px; border-top:1px solid var(--line); }
+
+  /* ---------- Small prompt modal (add box / settings) ---------- */
+  .form-row{ margin-bottom: 12px; }
+  .form-row label{ display:block; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+  .form-row input, .form-row select{
+    width:100%; background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    padding: 8px 10px; border-radius: var(--radius); font-size:13.5px; font-family:inherit;
+  }
+  .form-row input:focus, .form-row select:focus{ outline:none; border-color:var(--amber); }
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  /* ---------- Batch sheet ---------- */
+  #sheet-wrap{ flex:1; overflow: auto; display:none; padding: 16px; }
+  #sheet-wrap.active{ display:block; }
+  #canvas-wrap.hidden{ display:none; }
+  table#sheet{ border-collapse: collapse; width: max-content; min-width: 100%; font-size: 12.5px; }
+  table#sheet th{
+    position: sticky; top:0; background: var(--panel-2); color: var(--ink-dim);
+    text-align:left; font-weight:600; padding: 8px 10px; border: 1px solid var(--line);
+    font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space:nowrap;
+    z-index: 2;
+  }
+  table#sheet td{
+    border: 1px solid var(--line-soft); padding: 0;
+    background: var(--panel);
+  }
+  table#sheet td[contenteditable="true"]{
+    padding: 7px 10px; font-family:'IBM Plex Mono',monospace; color: var(--ink);
+    min-width: 70px; white-space: nowrap;
+  }
+  table#sheet td[contenteditable="true"]:focus{ outline: 1px solid var(--amber); outline-offset:-1px; background: var(--panel-2); }
+  table#sheet select{ background: var(--panel); color: var(--ink); border:none; width:100%; display:block; font-family:inherit; font-size:12.5px; padding: 7px 10px; }
+  table#sheet select option{ background: var(--panel-2); color: var(--ink); }
+  .field-value select option{ background: var(--panel-2); color: var(--ink); }
+  table#sheet .sheet-del{ color: var(--ink-faint); cursor:pointer; padding: 7px 10px; text-align:center; }
+  table#sheet .sheet-del:hover{ color: var(--red); }
+  #sheet-actions{ display:flex; gap:8px; margin-top:12px; }
+
+  /* ---------- GitHub panel ---------- */
+  #gh-panel-backdrop{ position:fixed; inset:0; background: rgba(6,10,8,.55); display:none; align-items:center; justify-content:center; z-index:110; }
+  #gh-panel-backdrop.open{ display:flex; }
+  #box-form-panel{ width:400px; max-width:calc(100vw - 40px); background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  #gh-panel h3{ margin:0 0 14px; font-size:15px; }
+  #gh-panel p.hint{ font-size:11.5px; color:var(--ink-faint); margin: -6px 0 14px; line-height:1.5; }
+  #gh-panel-foot{ display:flex; gap:8px; margin-top:6px; }
+
+  .empty-state{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px; color: var(--ink-faint); text-align:center;
+  }
+  .empty-state .big{ font-size:15px; color: var(--ink-dim); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <div id="sidebar-title"><span class="dot"></span>Component Bins</div>
+      <button class="btn btn-primary" id="btn-add-box">+ Add new box</button>
+    </div>
+    <div id="box-list"></div>
+    <div id="sidebar-footer">
+      <button class="btn btn-ghost" id="btn-gh-settings">GitHub sync…</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <div id="view-toggle">
+        <button id="tab-grid" class="active">Grid</button>
+        <button id="tab-sheet">Batch edit</button>
+      </div>
+      <div id="search-wrap">
+        <span id="search-icon">&#8981;</span>
+        <input id="search-input" placeholder="Search name, value, package, manufacturer…" autocomplete="off">
+        <div id="search-results"></div>
+      </div>
+      <div id="gh-status">not connected</div>
+    </div>
+
+    <div id="canvas-wrap">
+      <div id="box-label"></div>
+      <svg id="grid-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="zoom-hint">scroll to zoom · right-click drag to pan · double-click a cell to edit</div>
+      <div class="empty-state" id="no-box-state" style="display:none;">
+        <div class="big">No boxes yet</div>
+        <div>Add your first box from the sidebar to get started.</div>
+      </div>
+    </div>
+
+    <div id="sheet-wrap">
+      <table id="sheet">
+        <thead><tr id="sheet-head"></tr></thead>
+        <tbody id="sheet-body"></tbody>
+      </table>
+      <div id="sheet-actions">
+        <button class="btn" id="btn-sheet-add">+ Add component</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Component modal -->
+<div id="modal-backdrop">
+  <div id="modal">
+    <div id="modal-head">
+      <div id="modal-head-title">Component</div>
+      <div id="modal-close">&times;</div>
+    </div>
+    <div id="modal-body"></div>
+    <div id="modal-foot">
+      <button class="btn btn-danger" id="btn-delete-component" style="margin-right:auto;">Delete</button>
+      <button class="btn btn-primary" id="btn-close-modal">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic prompt modal (add/edit box) -->
+<div id="gh-panel-backdrop" style="display:none;">
+  <div id="box-form-panel"></div>
+</div>
+
+<!-- GitHub settings modal -->
+<div id="gh-settings-backdrop" class="modal-generic-backdrop" style="position:fixed;inset:0;background:rgba(6,10,8,.55);display:none;align-items:center;justify-content:center;z-index:110;">
+  <div id="gh-settings-panel" style="width:400px;max-width:calc(100vw - 40px);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.6);">
+    <h3 style="margin:0 0 4px;font-size:15px;">GitHub sync</h3>
+    <p class="hint">Your inventory is stored as a JSON file in a GitHub repo. Create a fine-grained personal access token with read/write access to that one repo's contents, and paste it below. It stays only in this browser's local storage.</p>
+    <div class="form-row"><label>Repo owner (username)</label><input id="gh-owner"></div>
+    <div class="form-row"><label>Repo name</label><input id="gh-repo"></div>
+    <div class="form-row"><label>Branch</label><input id="gh-branch" value="main"></div>
+    <div class="form-row"><label>File path</label><input id="gh-path" value="data/inventory.json"></div>
+    <div class="form-row"><label>Personal access token</label><input id="gh-token" type="password"></div>
+    <div id="gh-panel-foot" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn" id="btn-gh-cancel">Cancel</button>
+      <button class="btn" id="btn-gh-load">Load from GitHub</button>
+      <button class="btn btn-primary" id="btn-gh-save-settings" style="margin-left:auto;">Save settings</button>
+    </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+      <button class="btn btn-danger" id="btn-clear-local" style="width:100%;">Clear local data (this browser only)</button>
+      <p class="hint" style="margin:8px 0 0;">Wipes the working copy stored in this browser so you can start fresh — does not touch anything already saved to GitHub.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const COMPONENT_TYPES = ["Resistor","Capacitor","Inductor","MOSFET","Diode","IC","Connector","Other"];
+const RCL_TYPES = new Set(["Resistor","Capacitor","Inductor"]);
+const CELL_COLORS = ["#1a2822","#2a2216","#241a28","#16222a","#2a1a1a","#1a2a26","#26261a"];
+
+let state = {
+  boxes: [],       // {id, name, rows, cols}
+  components: []   // {id, boxId, row, col, name, type, value, package, amount, manufacturer, description, purchaseDate, color}
+};
+let currentBoxId = null;
+let dirty = false;
+
+let gh = JSON.parse(localStorage.getItem('gh_settings') || 'null') || { owner:'', repo:'', branch:'main', path:'data/inventory.json', token:'' };
+let ghFileSha = null;
+
+// view transform for grid canvas
+let view = { zoom: 1, panX: 0, panY: 0 };
+let isPanning = false, panStart = {x:0,y:0}, panOrigin = {x:0,y:0};
+
+const CELL_W = 168, CELL_H = 86, CELL_GAP = 8, GRID_PAD = 60;
+
+/* ============================================================
+   UTIL
+   ============================================================ */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function markDirty(){ dirty = true; updateGhStatus(); }
+function saveLocalDraft(){ localStorage.setItem('inventory_draft', JSON.stringify(state)); }
+
+function getBox(id){ return state.boxes.find(b=>b.id===id); }
+function componentsInBox(boxId){ return state.components.filter(c=>c.boxId===boxId); }
+function componentAt(boxId,row,col){ return state.components.find(c=>c.boxId===boxId && c.row===row && c.col===col); }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+function renderSidebar(){
+  const list = document.getElementById('box-list');
+  list.innerHTML = '';
+  state.boxes.forEach((box, idx)=>{
+    const el = document.createElement('div');
+    el.className = 'box-item' + (box.id===currentBoxId ? ' active' : '');
+    el.draggable = true;
+    el.dataset.id = box.id;
+    el.innerHTML = `
+      <span class="box-order">${idx+1}</span>
+      <span class="box-info">
+        <span class="box-name">${escapeHtml(box.name)}</span>
+        <span class="meta">${box.cols}&times;${box.rows}</span>
+      </span>
+      <span class="box-actions">
+        <span class="gear" title="Edit box">&#9881;</span>
+        <span class="trash" title="Delete box">&times;</span>
+      </span>`;
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('.box-actions')) return;
+      currentBoxId = box.id;
+      resetView();
+      renderSidebar();
+      renderGrid();
+    });
+    el.querySelector('.gear').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openBoxForm(box);
+    });
+    el.querySelector('.trash').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      deleteBoxWithConfirm(box);
+    });
+
+    el.addEventListener('dragstart', (e)=>{
+      e.dataTransfer.setData('text/plain', box.id);
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(()=>{ el.style.opacity = '0.4'; }, 0);
+    });
+    el.addEventListener('dragend', ()=>{
+      el.style.opacity = '';
+      document.querySelectorAll('.box-item.drag-over').forEach(x=>x.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', (e)=>{ e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', ()=> el.classList.remove('drag-over'));
+    el.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      const draggedId = e.dataTransfer.getData('text/plain');
+      if(!draggedId || draggedId===box.id) return;
+      const draggedBox = getBox(draggedId);
+      if(!draggedBox) return;
+      const targetIndex = state.boxes.findIndex(b=>b.id===box.id);
+      if(!confirm(`Move "${draggedBox.name}" to position ${targetIndex+1}?`)) return;
+      state.boxes = state.boxes.filter(b=>b.id!==draggedId);
+      const newIndex = state.boxes.findIndex(b=>b.id===box.id);
+      state.boxes.splice(newIndex, 0, draggedBox);
+      markDirty(); saveLocalDraft();
+      renderSidebar();
+    });
+
+    list.appendChild(el);
+  });
+}
+
+function deleteBoxWithConfirm(box){
+  const count = componentsInBox(box.id).length;
+  if(!confirm(`Delete "${box.name}"? This also removes ${count} component${count===1?'':'s'} stored inside it.`)) return;
+  if(!confirm(`Are you sure? This can't be undone.`)) return;
+  state.boxes = state.boxes.filter(b=>b.id!==box.id);
+  state.components = state.components.filter(c=>c.boxId!==box.id);
+  if(currentBoxId===box.id) currentBoxId = state.boxes[0]?.id || null;
+  markDirty(); saveLocalDraft();
+  renderSidebar(); resetView(); renderGrid();
+}
+
+function openBoxForm(box){
+  const editing = !!box;
+  const panel = document.getElementById('box-form-panel');
+  panel.innerHTML = `
+    <h3 style="margin:0 0 14px;font-size:15px;">${editing?'Edit box':'Add box'}</h3>
+    <div class="form-row"><label>Box name</label><input id="bf-name" value="${editing?escapeAttr(box.name):''}"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Columns (width, X)</label><input id="bf-cols" type="number" min="1" value="${editing?box.cols:8}"></div>
+      <div class="form-row"><label>Rows (height, Y)</label><input id="bf-rows" type="number" min="1" value="${editing?box.rows:7}"></div>
+    </div>
+    <div id="gh-panel-foot">
+      ${editing?'<button class="btn btn-danger" id="bf-delete">Delete box</button>':''}
+      <button class="btn" id="bf-cancel" style="margin-left:auto;">Cancel</button>
+      <button class="btn btn-primary" id="bf-save">${editing?'Save':'Create'}</button>
+    </div>
+  `;
+  document.getElementById('gh-panel-backdrop').classList.add('open');
+  document.getElementById('gh-panel-backdrop').style.display = 'flex';
+
+  document.getElementById('bf-cancel').onclick = closeBoxForm;
+  document.getElementById('bf-save').onclick = ()=>{
+    const name = document.getElementById('bf-name').value.trim();
+    const rows = Math.max(1, parseInt(document.getElementById('bf-rows').value)||8);
+    const cols = Math.max(1, parseInt(document.getElementById('bf-cols').value)||7);
+    if(!name){ alert('Box name is required.'); return; }
+    if(editing){
+      box.name = name; box.rows = rows; box.cols = cols;
+    } else {
+      const newBox = { id: uid(), name, rows, cols };
+      state.boxes.push(newBox);
+      currentBoxId = newBox.id;
+    }
+    markDirty(); saveLocalDraft();
+    closeBoxForm(); renderSidebar(); resetView(); renderGrid();
+  };
+  if(editing){
+    document.getElementById('bf-delete').onclick = ()=>{
+      if(!confirm(`Delete "${box.name}" and all ${componentsInBox(box.id).length} components inside it?`)) return;
+      if(!confirm(`Are you sure? This can't be undone.`)) return;
+      state.boxes = state.boxes.filter(b=>b.id!==box.id);
+      state.components = state.components.filter(c=>c.boxId!==box.id);
+      if(currentBoxId===box.id) currentBoxId = state.boxes[0]?.id || null;
+      markDirty(); saveLocalDraft();
+      closeBoxForm(); renderSidebar(); resetView(); renderGrid();
+    };
+  }
+}
+function closeBoxForm(){
+  document.getElementById('gh-panel-backdrop').classList.remove('open');
+  document.getElementById('gh-panel-backdrop').style.display = 'none';
+}
+document.getElementById('btn-add-box').addEventListener('click', ()=>openBoxForm(null));
+
+/* ============================================================
+   GRID (SVG canvas)
+   ============================================================ */
+function resetView(){ view = { zoom:1, panX:0, panY:0 }; }
+
+function renderGrid(){
+  const svg = document.getElementById('grid-svg');
+  const label = document.getElementById('box-label');
+  const emptyState = document.getElementById('no-box-state');
+
+  if(!currentBoxId || !getBox(currentBoxId)){
+    svg.innerHTML = ''; label.innerHTML = '';
+    emptyState.style.display = state.boxes.length ? 'none' : 'flex';
+    return;
+  }
+  emptyState.style.display = 'none';
+  const box = getBox(currentBoxId);
+  label.innerHTML = `<span class="n">Box:</span> ${escapeHtml(box.name)}`;
+
+  const totalW = box.cols*(CELL_W+CELL_GAP) - CELL_GAP + GRID_PAD*2;
+  const totalH = box.rows*(CELL_H+CELL_GAP) - CELL_GAP + GRID_PAD*2;
+
+  let cellsHtml = '';
+  for(let r=0;r<box.rows;r++){
+    for(let c=0;c<box.cols;c++){
+      const x = GRID_PAD + c*(CELL_W+CELL_GAP);
+      const y = GRID_PAD + r*(CELL_H+CELL_GAP);
+      const comp = componentAt(box.id, r, c);
+      const fill = comp && comp.color ? comp.color : (comp ? 'var(--cell-fill)' : 'var(--cell-empty)');
+      const filledClass = comp ? 'filled' : '';
+      const cx = x + CELL_W/2, cy = y + CELL_H/2;
+      cellsHtml += `<g class="cell-g" data-row="${r}" data-col="${c}">
+        <rect class="cell-rect ${filledClass}" x="${x}" y="${y}" width="${CELL_W}" height="${CELL_H}" rx="3" style="fill:${fill}"></rect>`;
+      if(comp){
+        const isRCL = RCL_TYPES.has(comp.type);
+        const primaryText = isRCL ? (comp.value || '') : (comp.name || '');
+        const secondaryText = comp.package || '';
+        const lines = [];
+        if(primaryText) lines.push({ text: primaryText, cls:'cell-primary', size:14 });
+        if(secondaryText) lines.push({ text: secondaryText, cls:'cell-secondary', size:10.5 });
+        if(lines.length===2){
+          cellsHtml += `<text class="${lines[0].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="${lines[0].size}">${escapeXml(truncate(lines[0].text,16))}</text>`;
+          cellsHtml += `<text class="${lines[1].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="${lines[1].size}">${escapeXml(truncate(lines[1].text,16))}</text>`;
+        } else if(lines.length===1){
+          cellsHtml += `<text class="${lines[0].cls}" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy}" font-size="${lines[0].size}">${escapeXml(truncate(lines[0].text,16))}</text>`;
+        }
+      }
+      cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
+      cellsHtml += `</g>`;
+    }
+  }
+
+  svg.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
+  svg.innerHTML = `<g id="viewport" transform="translate(${view.panX},${view.panY}) scale(${view.zoom})">${cellsHtml}</g>`;
+
+  svg.querySelectorAll('.cell-g').forEach(g=>{
+    g.addEventListener('dblclick', (e)=>{
+      e.preventDefault();
+      const row = parseInt(g.dataset.row), col = parseInt(g.dataset.col);
+      const comp = componentAt(box.id, row, col);
+      if(comp) openComponentModal(comp);
+      else openComponentModal(null, box.id, row, col);
+    });
+    g.addEventListener('mouseenter', ()=> g.querySelector('.cell-rect').classList.add('hover'));
+    g.addEventListener('mouseleave', ()=> g.querySelector('.cell-rect').classList.remove('hover'));
+  });
+}
+
+// zoom (mouse wheel) & pan (right-click drag)
+const canvasWrap = document.getElementById('canvas-wrap');
+canvasWrap.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  const delta = -e.deltaY * 0.0015;
+  const newZoom = Math.min(3, Math.max(0.3, view.zoom * (1+delta)));
+  view.zoom = newZoom;
+  renderGrid();
+}, { passive:false });
+
+canvasWrap.addEventListener('contextmenu', e=> e.preventDefault());
+canvasWrap.addEventListener('mousedown', (e)=>{
+  if(e.button === 2){
+    isPanning = true;
+    panStart = { x: e.clientX, y: e.clientY };
+    panOrigin = { x: view.panX, y: view.panY };
+    canvasWrap.classList.add('panning');
+  }
+});
+window.addEventListener('mousemove', (e)=>{
+  if(!isPanning) return;
+  const svg = document.getElementById('grid-svg');
+  const ctm = svg.getScreenCTM();
+  const scaleX = (ctm && ctm.a) ? ctm.a : 1;
+  const scaleY = (ctm && ctm.d) ? ctm.d : 1;
+  view.panX = panOrigin.x + (e.clientX - panStart.x) / scaleX;
+  view.panY = panOrigin.y + (e.clientY - panStart.y) / scaleY;
+  renderGrid();
+});
+window.addEventListener('mouseup', ()=>{
+  isPanning = false;
+  canvasWrap.classList.remove('panning');
+});
+
+/* ============================================================
+   COMPONENT MODAL
+   ============================================================ */
+let modalComponent = null; // component currently shown (may be a draft not yet in state.components)
+let modalIsNew = false;
+
+const FIELD_DEFS = [
+  { key:'name', label:'Name', type:'text' },
+  { key:'type', label:'Type', type:'select', options: COMPONENT_TYPES },
+  { key:'value', label:'Value', type:'text', placeholder:'e.g. 10k, 100nF, 4.7uH' },
+  { key:'package', label:'Package', type:'text', placeholder:'e.g. 0805, SOT-23' },
+  { key:'amount', label:'Amount', type:'number' },
+  { key:'manufacturer', label:'Manufacturer', type:'text' },
+  { key:'description', label:'Description', type:'textarea' },
+  { key:'purchaseDate', label:'Purchase date', type:'date' },
+];
+
+function openComponentModal(comp, boxId, row, col){
+  modalIsNew = !comp;
+  modalComponent = comp || {
+    id: null, boxId, row, col,
+    name:'', type:'Resistor', value:'', package:'', amount:1,
+    manufacturer:'', description:'', purchaseDate: todayISO(), color: ''
+  };
+  document.getElementById('modal-head-title').textContent = modalIsNew ? 'New component' : (modalComponent.name || 'Component');
+  document.getElementById('btn-delete-component').style.display = modalIsNew ? 'none' : 'inline-block';
+  renderModalBody();
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
+function renderModalBody(){
+  const body = document.getElementById('modal-body');
+  body.innerHTML = '';
+  FIELD_DEFS.forEach(f=>{
+    const row = document.createElement('div');
+    row.className = 'field-row';
+    const val = modalComponent[f.key];
+    const displayVal = (val===undefined||val===null||val==='') ? '' : val;
+    row.innerHTML = `<div class="field-label">${f.label}${f.required?' *':''}</div>
+      <div class="field-value ${displayVal===''?'empty':''}" data-key="${f.key}">${displayVal===''? 'Not set' : escapeHtml(String(displayVal))}</div>`;
+    row.querySelector('.field-value').addEventListener('click', function(){ activateFieldEditor(this, f); });
+    body.appendChild(row);
+  });
+  // color swatches
+  const colorRow = document.createElement('div');
+  colorRow.className = 'field-row';
+  colorRow.innerHTML = `<div class="field-label">Cell color</div>
+    <div class="swatch-row">${CELL_COLORS.map(c=>`<div class="swatch ${modalComponent.color===c?'selected':''}" data-color="${c}" style="background:${c}"></div>`).join('')}
+    <div class="swatch ${!modalComponent.color?'selected':''}" data-color="" style="background:var(--cell-fill);border:1px dashed var(--ink-faint);"></div></div>`;
+  colorRow.querySelectorAll('.swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      modalComponent.color = sw.dataset.color;
+      commitModalComponent();
+      renderModalBody();
+    });
+  });
+  body.appendChild(colorRow);
+}
+
+function activateFieldEditor(el, f){
+  if(el.querySelector('input,select,textarea')) return; // already editing
+  const current = modalComponent[f.key] ?? '';
+  let inputHtml;
+  if(f.type==='select'){
+    inputHtml = `<select>${f.options.map(o=>`<option value="${o}" ${o===current?'selected':''}>${o}</option>`).join('')}</select>`;
+  } else if(f.type==='textarea'){
+    inputHtml = `<textarea>${escapeHtml(String(current))}</textarea>`;
+  } else {
+    inputHtml = `<input type="${f.type}" value="${escapeAttr(String(current))}" ${f.placeholder?`placeholder="${f.placeholder}"`:''}>`;
+  }
+  el.innerHTML = inputHtml;
+  const input = el.querySelector('input,select,textarea');
+  input.focus();
+  if(input.select) input.select();
+
+  function finish(){
+    let v = input.value;
+    if(f.type==='number'){ v = v===''? '' : Number(v); }
+    modalComponent[f.key] = v;
+    commitModalComponent();
+    renderModalBody();
+  }
+  input.addEventListener('blur', finish);
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' && f.type!=='textarea'){ e.preventDefault(); input.blur(); }
+    if(e.key==='Escape'){ renderModalBody(); }
+  });
+}
+
+function commitModalComponent(){
+  if(modalIsNew){
+    modalComponent.id = uid();
+    if(modalComponent.amount===undefined || modalComponent.amount==='') modalComponent.amount = 1;
+    state.components.push(modalComponent);
+    modalIsNew = false;
+    document.getElementById('btn-delete-component').style.display = 'inline-block';
+  }
+  document.getElementById('modal-head-title').textContent = modalComponent.name || 'Component';
+  markDirty(); saveLocalDraft();
+  renderGrid();
+  if(document.getElementById('sheet-wrap').classList.contains('active')) renderSheet();
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+document.getElementById('modal-backdrop').addEventListener('mousedown', (e)=>{
+  if(e.target.id==='modal-backdrop') closeModal();
+});
+function closeModal(){
+  document.getElementById('modal-backdrop').classList.remove('open');
+  modalComponent = null;
+}
+document.getElementById('btn-delete-component').addEventListener('click', ()=>{
+  if(!modalComponent || !modalComponent.id) return;
+  if(!confirm(`Delete "${modalComponent.name}"?`)) return;
+  state.components = state.components.filter(c=>c.id!==modalComponent.id);
+  markDirty(); saveLocalDraft();
+  closeModal(); renderGrid();
+  if(document.getElementById('sheet-wrap').classList.contains('active')) renderSheet();
+});
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ searchResults.classList.remove('open'); return; }
+  const fields = ['name','type','value','package','manufacturer','description'];
+  const matches = state.components.filter(c=> fields.some(f => (c[f]||'').toString().toLowerCase().includes(q)) );
+  if(matches.length===0){
+    searchResults.innerHTML = `<div class="sr-empty">Nothing found</div>`;
+  } else {
+    searchResults.innerHTML = matches.slice(0,40).map(c=>{
+      const box = getBox(c.boxId);
+      return `<div class="sr-item" data-id="${c.id}">
+        <div class="sr-name">${escapeHtml(c.name)} ${c.value?('· '+escapeHtml(c.value)):''} ${c.package?('· '+escapeHtml(c.package)):''}</div>
+        <div class="sr-sub">${box?escapeHtml(box.name):'—'} · col ${c.col}, row ${c.row} · ${c.type||''}</div>
+      </div>`;
+    }).join('');
+    searchResults.querySelectorAll('.sr-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const comp = state.components.find(c=>c.id===item.dataset.id);
+        if(!comp) return;
+        jumpToComponent(comp);
+        searchResults.classList.remove('open');
+        searchInput.value = '';
+      });
+    });
+  }
+  searchResults.classList.add('open');
+});
+document.addEventListener('click', (e)=>{
+  if(!document.getElementById('search-wrap').contains(e.target)) searchResults.classList.remove('open');
+});
+
+function jumpToComponent(comp){
+  showGridTab();
+  currentBoxId = comp.boxId;
+  resetView();
+  renderSidebar();
+  renderGrid();
+  setTimeout(()=>{
+    const g = document.querySelector(`.cell-g[data-row="${comp.row}"][data-col="${comp.col}"]`);
+    if(g){
+      g.scrollIntoView({block:'center', inline:'center'});
+      const rect = g.querySelector('.cell-rect');
+      rect.classList.add('cell-highlight');
+      setTimeout(()=>rect.classList.remove('cell-highlight'), 3000);
+    }
+  }, 50);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+document.getElementById('tab-grid').addEventListener('click', showGridTab);
+document.getElementById('tab-sheet').addEventListener('click', showSheetTab);
+function showGridTab(){
+  document.getElementById('tab-grid').classList.add('active');
+  document.getElementById('tab-sheet').classList.remove('active');
+  document.getElementById('canvas-wrap').classList.remove('hidden');
+  document.getElementById('sheet-wrap').classList.remove('active');
+  renderGrid();
+}
+function showSheetTab(){
+  document.getElementById('tab-sheet').classList.add('active');
+  document.getElementById('tab-grid').classList.remove('active');
+  document.getElementById('canvas-wrap').classList.add('hidden');
+  document.getElementById('sheet-wrap').classList.add('active');
+  renderSheet();
+}
+
+/* ============================================================
+   BATCH EDIT SHEET
+   ============================================================ */
+const SHEET_COLS = [
+  {key:'box', label:'Box', type:'boxselect'},
+  {key:'col', label:'Col (X)', type:'number'},
+  {key:'row', label:'Row (Y)', type:'number'},
+  {key:'name', label:'Name', type:'text'},
+  {key:'type', label:'Type', type:'select'},
+  {key:'value', label:'Value', type:'text'},
+  {key:'package', label:'Package', type:'text'},
+  {key:'amount', label:'Amount', type:'number'},
+  {key:'manufacturer', label:'Manufacturer', type:'text'},
+  {key:'description', label:'Description', type:'text'},
+  {key:'purchaseDate', label:'Purchase date', type:'text'},
+];
+
+function renderSheet(){
+  const head = document.getElementById('sheet-head');
+  head.innerHTML = SHEET_COLS.map(c=>`<th>${c.label}</th>`).join('') + '<th></th>';
+  const body = document.getElementById('sheet-body');
+  body.innerHTML = '';
+  state.components.forEach(comp=>{
+    const tr = document.createElement('tr');
+    SHEET_COLS.forEach(col=>{
+      const td = document.createElement('td');
+      if(col.type==='boxselect'){
+        const sel = document.createElement('select');
+        state.boxes.forEach(b=>{
+          const opt = document.createElement('option');
+          opt.value = b.id; opt.textContent = b.name;
+          if(b.id===comp.boxId) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        sel.addEventListener('change', ()=>{ comp.boxId = sel.value; markDirty(); saveLocalDraft(); });
+        td.appendChild(sel);
+      } else if(col.type==='select'){
+        const sel = document.createElement('select');
+        COMPONENT_TYPES.forEach(t=>{
+          const opt = document.createElement('option');
+          opt.value = t; opt.textContent = t;
+          if(t===comp.type) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        sel.addEventListener('change', ()=>{ comp.type = sel.value; markDirty(); saveLocalDraft(); renderGrid(); });
+        td.appendChild(sel);
+      } else {
+        td.contentEditable = 'true';
+        td.textContent = comp[col.key] ?? '';
+        td.addEventListener('blur', ()=>{
+          let v = td.textContent.trim();
+          if(col.type==='number') v = v===''? '' : Number(v);
+          comp[col.key] = v;
+          markDirty(); saveLocalDraft();
+          if(col.key==='name') document.getElementById('modal-head-title').textContent = comp.name;
+          renderGrid();
+        });
+        td.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); td.blur(); } });
+      }
+      tr.appendChild(td);
+    });
+    const delTd = document.createElement('td');
+    delTd.className = 'sheet-del';
+    delTd.textContent = '✕';
+    delTd.addEventListener('click', ()=>{
+      if(!confirm(`Delete "${comp.name}"?`)) return;
+      state.components = state.components.filter(c=>c.id!==comp.id);
+      markDirty(); saveLocalDraft(); renderSheet(); renderGrid();
+    });
+    tr.appendChild(delTd);
+    body.appendChild(tr);
+  });
+}
+document.getElementById('btn-sheet-add').addEventListener('click', ()=>{
+  if(state.boxes.length===0){ alert('Add a box first.'); return; }
+  const newComp = {
+    id: uid(), boxId: state.boxes[0].id, row:0, col:0,
+    name:'', type:'Resistor', value:'', package:'', amount:1,
+    manufacturer:'', description:'', purchaseDate: todayISO(), color:''
+  };
+  state.components.push(newComp);
+  markDirty(); saveLocalDraft(); renderSheet(); renderGrid();
+});
+
+/* ============================================================
+   GITHUB SYNC
+   ============================================================ */
+function updateGhStatus(){
+  const el = document.getElementById('gh-status');
+  if(!gh.owner || !gh.repo || !gh.token){ el.textContent = 'not connected'; el.className=''; return; }
+  el.textContent = dirty ? 'unsaved changes' : 'synced';
+  el.className = dirty ? 'dirty' : 'ok';
+}
+
+document.getElementById('btn-gh-settings').addEventListener('click', openGhSettings);
+function openGhSettings(){
+  document.getElementById('gh-owner').value = gh.owner;
+  document.getElementById('gh-repo').value = gh.repo;
+  document.getElementById('gh-branch').value = gh.branch || 'main';
+  document.getElementById('gh-path').value = gh.path || 'data/inventory.json';
+  document.getElementById('gh-token').value = gh.token;
+  document.getElementById('gh-settings-backdrop').style.display = 'flex';
+}
+document.getElementById('btn-gh-cancel').addEventListener('click', ()=>{
+  document.getElementById('gh-settings-backdrop').style.display = 'none';
+});
+document.getElementById('btn-gh-save-settings').addEventListener('click', ()=>{
+  gh = {
+    owner: document.getElementById('gh-owner').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim(),
+    branch: document.getElementById('gh-branch').value.trim() || 'main',
+    path: document.getElementById('gh-path').value.trim() || 'data/inventory.json',
+    token: document.getElementById('gh-token').value.trim(),
+  };
+  localStorage.setItem('gh_settings', JSON.stringify(gh));
+  updateGhStatus();
+  document.getElementById('gh-settings-backdrop').style.display = 'none';
+});
+document.getElementById('btn-gh-load').addEventListener('click', async ()=>{
+  await loadFromGithub();
+});
+document.getElementById('btn-clear-local').addEventListener('click', ()=>{
+  if(!confirm('Clear all locally-held inventory data in this browser? Anything already saved to GitHub is unaffected.')) return;
+  localStorage.removeItem('inventory_draft');
+  location.reload();
+});
+
+function ghApiBase(){ return `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.path}`; }
+
+async function loadFromGithub(){
+  if(!gh.owner || !gh.repo || !gh.token){ alert('Fill in owner, repo and token first.'); return; }
+  try{
+    const res = await fetch(`${ghApiBase()}?ref=${encodeURIComponent(gh.branch)}`, {
+      headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json' }
+    });
+    if(res.status===404){
+      if(confirm('No inventory file found at that path yet. Create it now with an empty inventory?')){
+        await saveToGithub(true);
+      }
+      return;
+    }
+    if(!res.ok) throw new Error(`GitHub responded ${res.status}`);
+    const json = await res.json();
+    ghFileSha = json.sha;
+    const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+    const loaded = JSON.parse(decoded);
+    state = { boxes: loaded.boxes || [], components: loaded.components || [] };
+    currentBoxId = state.boxes[0]?.id || null;
+    dirty = false;
+    saveLocalDraft();
+    updateGhStatus();
+    resetView();
+    renderSidebar(); renderGrid(); renderSheet();
+    document.getElementById('gh-settings-backdrop').style.display = 'none';
+    alert('Loaded from GitHub.');
+  } catch(err){
+    alert('Could not load from GitHub: ' + err.message);
+  }
+}
+
+async function saveToGithub(silent){
+  if(!gh.owner || !gh.repo || !gh.token){ if(!silent) alert('Fill in owner, repo and token first.'); return; }
+  try{
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+    const body = {
+      message: `Update inventory — ${new Date().toISOString()}`,
+      content,
+      branch: gh.branch,
+    };
+    if(ghFileSha) body.sha = ghFileSha;
+    const res = await fetch(ghApiBase(), {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok){
+      const errJson = await res.json().catch(()=>({}));
+      throw new Error(errJson.message || `GitHub responded ${res.status}`);
+    }
+    const json = await res.json();
+    ghFileSha = json.content.sha;
+    dirty = false;
+    updateGhStatus();
+    if(!silent) alert('Saved to GitHub.');
+  } catch(err){
+    alert('Could not save to GitHub: ' + err.message);
+  }
+}
+
+// Ctrl+S to save
+window.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){
+    e.preventDefault();
+    saveToGithub(false);
+  }
+});
+// add explicit save button next to status
+(function addSaveButton(){
+  const topbar = document.getElementById('topbar');
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-small';
+  btn.textContent = 'Save to GitHub';
+  btn.style.marginLeft = '0';
+  btn.addEventListener('click', ()=>saveToGithub(false));
+  topbar.insertBefore(btn, document.getElementById('gh-status'));
+})();
+
+/* ============================================================
+   ESCAPE HELPERS
+   ============================================================ */
+function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escapeAttr(s){ return escapeHtml(s); }
+function escapeXml(s){ return escapeHtml(s); }
+function truncate(s, n){ s = String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  const draft = localStorage.getItem('inventory_draft');
+  if(draft){
+    try{ state = JSON.parse(draft); } catch(e){}
+  }
+  if(state.boxes.length===0){
+    // seed with one starter box so the app isn't empty on first run
+    state.boxes.push({ id: uid(), name: 'Box 1', rows: 7, cols: 8 });
+  }
+  currentBoxId = state.boxes[0].id;
+  updateGhStatus();
+  renderSidebar();
+  renderGrid();
+
+  if(gh.owner && gh.repo && gh.token){
+    loadFromGithub();
+  }
+}
+init();
+</script>
+</body>
+</html>
