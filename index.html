@@ -219,7 +219,7 @@
   .field-row:last-child{ border-bottom:none; }
   .field-label{ font-size:11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing:.06em; margin-bottom:4px; }
   .field-value{
-    font-size: 20px; color: var(--ink); font-family:'IBM Plex Mono',monospace;
+    font-size: 14px; color: var(--ink); font-family:'IBM Plex Mono',monospace;
     cursor: text; min-height: 20px; padding: 3px 4px; border-radius: 2px;
     word-break: break-word;
   }
@@ -398,7 +398,7 @@ const CELL_COLORS = ["#1a2822","#2a2216","#241a28","#16222a","#2a1a1a","#1a2a26"
 
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
-  return RCL_TYPES.has(type) ? `${abbr}_NOVALUE` : `${abbr}_NONAME`;
+  return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
 }
 
 let state = {
@@ -415,7 +415,7 @@ let ghFileSha = null;
 let view = { zoom: 1, panX: 0, panY: 0 };
 let isPanning = false, panStart = {x:0,y:0}, panOrigin = {x:0,y:0};
 
-const CELL_W = 176, CELL_H = 132, CELL_GAP = 8, GRID_PAD = 60;
+const CELL_W = 192, CELL_H = 144, CELL_GAP = 8, GRID_PAD = 60;
 
 /* ============================================================
    UTIL
@@ -598,8 +598,8 @@ function renderGrid(){
         const isRCL = RCL_TYPES.has(comp.type);
         const primaryText = isRCL ? (comp.value || primaryPlaceholder(comp.type)) : (comp.name || primaryPlaceholder(comp.type));
         const secondaryText = comp.package || 'NO_PACKAGE';
-        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-10}" font-size="20">${escapeXml(truncate(primaryText,16))}</text>`;
-        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+14}" font-size="14">${escapeXml(truncate(secondaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="18">${escapeXml(truncate(primaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="13">${escapeXml(truncate(secondaryText,16))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
