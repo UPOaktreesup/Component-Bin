@@ -295,16 +295,6 @@
       <button class="btn btn-primary" id="btn-add-box">+ Add new box</button>
     </div>
     <div id="box-list"></div>
-    <div id="sidebar-footer">
-      <label style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;">Theme</label>
-      <select id="theme-mode" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:7px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;">
-        <option value="dark" style="background:#182019;color:#e9efe9;">Always dark</option>
-        <option value="light" style="background:#182019;color:#e9efe9;">Always light</option>
-        <option value="system" style="background:#182019;color:#e9efe9;">Match system</option>
-        <option value="time" style="background:#182019;color:#e9efe9;">Match time of day</option>
-      </select>
-      <button class="btn btn-ghost" id="btn-gh-settings">GitHub sync…</button>
-    </div>
   </div>
 
   <!-- MAIN -->
@@ -319,6 +309,13 @@
         <input id="search-input" placeholder="Search name, value, package, manufacturer…" autocomplete="off">
         <div id="search-results"></div>
       </div>
+      <select id="theme-mode" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:7px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;flex-shrink:0;">
+        <option value="dark" style="background:#182019;color:#e9efe9;">Always dark</option>
+        <option value="light" style="background:#182019;color:#e9efe9;">Always light</option>
+        <option value="system" style="background:#182019;color:#e9efe9;">Match system</option>
+        <option value="time" style="background:#182019;color:#e9efe9;">Match time of day</option>
+      </select>
+      <button class="btn btn-ghost btn-small" id="btn-gh-settings" style="flex-shrink:0;">GitHub sync…</button>
       <div id="gh-status">not connected</div>
     </div>
 
