@@ -52,6 +52,66 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtmnbwdwz9nere",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 3,
+      "name": "",
+      "type": "Resistor",
+      "value": "1R",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmnea06miu4po",
+      "boxId": "mtmhepwwv89gri",
+      "row": 1,
+      "col": 0,
+      "name": "",
+      "type": "Resistor",
+      "value": "47k",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmnemamwfbizy",
+      "boxId": "mtmhepwwv89gri",
+      "row": 1,
+      "col": 2,
+      "name": "",
+      "type": "Resistor",
+      "value": "1.5k",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmnez2e2jmleu",
+      "boxId": "mtmhepwwv89gri",
+      "row": 1,
+      "col": 3,
+      "name": "",
+      "type": "Resistor",
+      "value": "33R",
+      "package": "",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
