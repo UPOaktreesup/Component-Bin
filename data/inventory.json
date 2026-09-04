@@ -337,6 +337,66 @@
       "description": "",
       "purchaseDate": "2026-09-04",
       "color": ""
+    },
+    {
+      "id": "mtmoni4g20s8q4",
+      "boxId": "mtmhepwwv89gri",
+      "row": 6,
+      "col": 0,
+      "name": "",
+      "type": "Resistor",
+      "value": "1k",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmonl330qfoz4",
+      "boxId": "mtmhepwwv89gri",
+      "row": 6,
+      "col": 1,
+      "name": "",
+      "type": "Resistor",
+      "value": "10k",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmonor7a5dbj7",
+      "boxId": "mtmhepwwv89gri",
+      "row": 6,
+      "col": 2,
+      "name": "",
+      "type": "Resistor",
+      "value": "100k",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtmonqumniu7up",
+      "boxId": "mtmhepwwv89gri",
+      "row": 6,
+      "col": 3,
+      "name": "",
+      "type": "Resistor",
+      "value": "1M",
+      "package": "0805",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-04",
+      "color": ""
     }
   ]
 }
