@@ -249,26 +249,28 @@
   #sheet-wrap{ flex:1; min-height:0; overflow: auto; display:none; padding: 16px; }
   #sheet-wrap.active{ display:block; }
   #canvas-wrap.hidden{ display:none; }
-  table#sheet{ border-collapse: collapse; width: max-content; min-width: 100%; font-size: 12.5px; }
+  table#sheet{ border-collapse: separate; border-spacing:0; table-layout: fixed; width: max-content; min-width: 100%; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; }
   table#sheet th{
     position: sticky; top:0; background: var(--panel-2); color: var(--ink-dim);
-    text-align:left; font-weight:600; padding: 8px 10px; border: 1px solid var(--line);
-    font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space:nowrap;
+    text-align:center; vertical-align:middle; font-weight:600; padding: 8px 10px; border: 1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace; font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
     z-index: 2;
   }
   table#sheet td{
     border: 1px solid var(--line-soft); padding: 0;
     background: var(--panel);
+    text-align:center; vertical-align:middle;
   }
-  table#sheet td[contenteditable="true"]{
-    padding: 7px 10px; font-family:'IBM Plex Mono',monospace; color: var(--ink);
-    min-width: 70px; white-space: nowrap;
+  table#sheet td.sheet-cell{
+    padding: 7px 8px; font-family:'IBM Plex Mono',monospace; color: var(--ink);
+    white-space: nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  table#sheet td[contenteditable="true"]:focus{ outline: 1px solid var(--amber); outline-offset:-1px; background: var(--panel-2); }
-  table#sheet select{ background: var(--panel); color: var(--ink); border:none; width:100%; display:block; font-family:inherit; font-size:12.5px; padding: 7px 10px; }
+  table#sheet td.sheet-cell:focus{ outline: 1px solid var(--amber); outline-offset:-1px; background: var(--panel-2); overflow:visible; }
+  table#sheet select{ background: var(--panel); color: var(--ink); border:none; width:100%; display:block; text-align:center; text-align-last:center; font-family:'IBM Plex Mono',monospace; font-size:12.5px; padding: 7px 4px; }
   table#sheet select option{ background: var(--panel-2); color: var(--ink); }
   .field-value select option{ background: var(--panel-2); color: var(--ink); }
-  table#sheet .sheet-del{ color: var(--ink-faint); cursor:pointer; padding: 7px 10px; text-align:center; }
+  table#sheet .sheet-del{ color: var(--ink-faint); cursor:pointer; padding: 7px 10px; text-align:center; vertical-align:middle; }
   table#sheet .sheet-del:hover{ color: var(--red); }
   #sheet-actions{ display:flex; gap:8px; margin-top:12px; }
   table#sheet td.sheet-selected{ outline: 2px solid var(--amber); outline-offset:-2px; background: var(--amber-dim); }
@@ -950,17 +952,17 @@ function showSheetTab(){
    BATCH EDIT SHEET
    ============================================================ */
 const SHEET_COLS = [
-  {key:'box', label:'Box', type:'boxselect'},
-  {key:'col', label:'Col (X)', type:'number'},
-  {key:'row', label:'Row (Y)', type:'number'},
-  {key:'name', label:'Name', type:'text'},
-  {key:'type', label:'Type', type:'select'},
-  {key:'value', label:'Value', type:'text'},
-  {key:'package', label:'Package', type:'text'},
-  {key:'amount', label:'Amount', type:'number'},
-  {key:'manufacturer', label:'Manufacturer', type:'text'},
-  {key:'description', label:'Description', type:'text'},
-  {key:'purchaseDate', label:'Purchase date', type:'text'},
+  {key:'box', label:'Box', type:'boxselect', width:90},
+  {key:'col', label:'Col (X)', type:'number', width:52},
+  {key:'row', label:'Row (Y)', type:'number', width:52},
+  {key:'name', label:'Name', type:'text', width:140},
+  {key:'type', label:'Type', type:'select', width:110},
+  {key:'value', label:'Value', type:'text', width:100},
+  {key:'package', label:'Package', type:'text', width:100},
+  {key:'amount', label:'Amount', type:'number', width:70},
+  {key:'manufacturer', label:'Manufacturer', type:'text', width:140},
+  {key:'description', label:'Description', type:'text', width:220},
+  {key:'purchaseDate', label:'Purchase date', type:'text', width:110},
 ];
 
 let sheetSort = { field:'none', dir:'asc', groupByBox:false };
@@ -1036,7 +1038,7 @@ function maybeResort(){
 
 function renderSheet(){
   const head = document.getElementById('sheet-head');
-  head.innerHTML = SHEET_COLS.map(c=>`<th>${c.label}</th>`).join('') + '<th></th>';
+  head.innerHTML = SHEET_COLS.map(c=>`<th style="width:${c.width}px">${c.label}</th>`).join('') + '<th style="width:36px"></th>';
   const body = document.getElementById('sheet-body');
   body.innerHTML = '';
   const rows = sortedSheetRows();
@@ -1067,6 +1069,7 @@ function renderSheet(){
         td.appendChild(sel);
       } else {
         td.contentEditable = 'false';
+        td.classList.add('sheet-cell');
         if(col.key==='amount'){
           const n = Number(comp.amount);
           td.textContent = (comp.amount!=='' && comp.amount!==undefined && !isNaN(n) && n>999) ? '999+' : (comp.amount ?? '');
