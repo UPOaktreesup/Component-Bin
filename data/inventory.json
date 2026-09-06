@@ -2935,6 +2935,66 @@
       "description": "",
       "purchaseDate": "2026-09-06",
       "color": ""
+    },
+    {
+      "id": "mtpuqymfd1oo1r",
+      "boxId": "mtpjt8iben3j1z",
+      "row": 2,
+      "col": 4,
+      "name": "NSR0320MW2T1G",
+      "type": "Diode",
+      "value": "",
+      "package": "SOD-323",
+      "amount": 10,
+      "manufacturer": "Onsemi",
+      "description": "High Current Schottky Barrier Diode",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpuuiwl8319wm",
+      "boxId": "mtpjt8iben3j1z",
+      "row": 2,
+      "col": 6,
+      "name": "PCMF1USB3SZ",
+      "type": "Diode",
+      "value": "",
+      "package": "",
+      "amount": 10,
+      "manufacturer": "Nexperia",
+      "description": "Common-mode Differential EMI filter and ESD Protection",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpuz29ixsdn8p",
+      "boxId": "mtpjt8iben3j1z",
+      "row": 2,
+      "col": 7,
+      "name": "TPS5450DDAR",
+      "type": "IC",
+      "value": "",
+      "package": "PowerPAD SOIC-8",
+      "amount": 5,
+      "manufacturer": "Texas Instruments",
+      "description": "Wide Input Range Step-Down Converter",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpv89i7dmxx0j",
+      "boxId": "mtpjt8iben3j1z",
+      "row": 3,
+      "col": 4,
+      "name": "RE1C002UNTCL",
+      "type": "Transistors",
+      "value": "",
+      "package": "SOT-416FL",
+      "amount": 3,
+      "manufacturer": "ROHM",
+      "description": "1.2V Drive N-channel MOSFET",
+      "purchaseDate": "2026-09-06",
+      "color": ""
     }
   ]
 }
