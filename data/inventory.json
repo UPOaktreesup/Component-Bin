@@ -1185,21 +1185,6 @@
       "color": ""
     },
     {
-      "id": "mtpfwvy9h4o7y6",
-      "boxId": "mtparxieeyphc2",
-      "row": 0,
-      "col": 7,
-      "name": "",
-      "type": "Diode",
-      "value": "",
-      "package": "",
-      "amount": 1,
-      "manufacturer": "",
-      "description": "",
-      "purchaseDate": "2026-09-06",
-      "color": ""
-    },
-    {
       "id": "mtpgbwvieronmp",
       "boxId": "mtparxieeyphc2",
       "row": 1,
@@ -1226,6 +1211,36 @@
       "amount": 4,
       "manufacturer": "",
       "description": "8-Bit Parallel-Out Serial Shift Registers",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpgffpx4j604c",
+      "boxId": "mtparxieeyphc2",
+      "row": 1,
+      "col": 6,
+      "name": "SN74HC138",
+      "type": "IC",
+      "value": "",
+      "package": "SOIC-16",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "CMOS Logic 3-to-8 Line Decoder Demultiplexer",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpgr7q1rrcd99",
+      "boxId": "mtparxieeyphc2",
+      "row": 1,
+      "col": 7,
+      "name": "SN74HC595",
+      "type": "IC",
+      "value": "",
+      "package": "SOIC-16",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "8-bit serial-in, parallel-out shift register",
       "purchaseDate": "2026-09-06",
       "color": ""
     }
