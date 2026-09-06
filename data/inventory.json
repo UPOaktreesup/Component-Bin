@@ -2875,6 +2875,66 @@
       "description": "",
       "purchaseDate": "2026-09-06",
       "color": ""
+    },
+    {
+      "id": "mtpujp209s3eeg",
+      "boxId": "mtparxieeyphc2",
+      "row": 0,
+      "col": 7,
+      "name": "6MHz",
+      "type": "Crystals & Oscillators",
+      "value": "",
+      "package": "49SMD",
+      "amount": 10,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpulae9392e00",
+      "boxId": "mtparxieeyphc2",
+      "row": 3,
+      "col": 4,
+      "name": "IRFZ44NS",
+      "type": "Transistors",
+      "value": "",
+      "package": "TO-263",
+      "amount": 1,
+      "manufacturer": "Infineon",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpumzjo73qsm2",
+      "boxId": "mtparxieeyphc2",
+      "row": 6,
+      "col": 4,
+      "name": "IRFH7440",
+      "type": "Transistors",
+      "value": "",
+      "package": "PQFN 5x6",
+      "amount": 1,
+      "manufacturer": "Infineon",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpunweeig7j2g",
+      "boxId": "mtparxieeyphc2",
+      "row": 6,
+      "col": 6,
+      "name": "Push Buttons",
+      "type": "Buttons & Switches",
+      "value": "",
+      "package": "",
+      "amount": 20,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
     }
   ]
 }
