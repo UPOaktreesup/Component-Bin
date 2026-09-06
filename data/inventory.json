@@ -853,6 +853,21 @@
       "description": "",
       "purchaseDate": "2026-09-06",
       "color": ""
+    },
+    {
+      "id": "mtpcnrocj53nji",
+      "boxId": "mtparxieeyphc2",
+      "row": 2,
+      "col": 0,
+      "name": "",
+      "type": "Capacitor",
+      "value": "100V 105",
+      "package": "1210",
+      "amount": 20,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
     }
   ]
 }
