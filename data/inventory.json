@@ -5,6 +5,12 @@
       "name": "Box 1",
       "rows": 7,
       "cols": 8
+    },
+    {
+      "id": "mtparxieeyphc2",
+      "name": "Box 2",
+      "rows": 7,
+      "cols": 8
     }
   ],
   "components": [
@@ -17,7 +23,7 @@
       "type": "Resistor",
       "value": "0R",
       "package": "0805",
-      "amount": 1,
+      "amount": 20,
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
@@ -422,7 +428,7 @@
       "type": "Resistor",
       "value": "10R",
       "package": "0805",
-      "amount": 1,
+      "amount": 50,
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
@@ -437,7 +443,7 @@
       "type": "Resistor",
       "value": "100R",
       "package": "0805",
-      "amount": 1,
+      "amount": 50,
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
@@ -452,7 +458,7 @@
       "type": "Resistor",
       "value": "13.3k",
       "package": "0805,0402",
-      "amount": 1,
+      "amount": 50,
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
@@ -467,7 +473,7 @@
       "type": "Resistor",
       "value": "750k",
       "package": "0805",
-      "amount": 1,
+      "amount": 50,
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
@@ -726,6 +732,36 @@
       "manufacturer": "",
       "description": "",
       "purchaseDate": "2026-09-04",
+      "color": ""
+    },
+    {
+      "id": "mtpayk8tiqugz4",
+      "boxId": "mtparxieeyphc2",
+      "row": 0,
+      "col": 0,
+      "name": "",
+      "type": "Capacitor",
+      "value": "50V 104",
+      "package": "0603",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtpb2b36k15qru",
+      "boxId": "mtparxieeyphc2",
+      "row": 0,
+      "col": 1,
+      "name": "",
+      "type": "Capacitor",
+      "value": "50V 105",
+      "package": "0603",
+      "amount": 1,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-06",
       "color": ""
     }
   ]
