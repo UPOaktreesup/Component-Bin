@@ -3160,6 +3160,21 @@
       "description": "USBPD and Multiple Fast Charging Protocol Receiving Chip CH224",
       "purchaseDate": "2026-09-06",
       "color": ""
+    },
+    {
+      "id": "mtpw8n4os0qal0",
+      "boxId": "mtpjt8iben3j1z",
+      "row": 6,
+      "col": 4,
+      "name": "BSH205G2R",
+      "type": "Transistors",
+      "value": "",
+      "package": "SOT-23",
+      "amount": 10,
+      "manufacturer": "Nexperia",
+      "description": "P-channel enhancement mode Field-Effect Transistor",
+      "purchaseDate": "2026-09-06",
+      "color": ""
     }
   ]
 }
