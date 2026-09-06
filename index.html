@@ -312,6 +312,8 @@
         <input id="search-input" placeholder="Search name, value, package, manufacturer…" autocomplete="off">
         <div id="search-results"></div>
       </div>
+      <label style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;">New cells:</label>
+      <select id="default-type" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:7px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;flex-shrink:0;"></select>
       <select id="theme-mode" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:7px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;flex-shrink:0;">
         <option value="dark" style="background:#182019;color:#e9efe9;">Always dark</option>
         <option value="light" style="background:#182019;color:#e9efe9;">Always light</option>
@@ -430,6 +432,7 @@ let state = {
 };
 let currentBoxId = null;
 let dirty = false;
+let defaultNewType = 'Resistor';
 
 let gh = JSON.parse(localStorage.getItem('gh_settings') || 'null') || { owner:'', repo:'', branch:'main', path:'data/inventory.json', token:'' };
 let ghFileSha = null;
@@ -444,6 +447,14 @@ const CELL_W = 176, CELL_H = 132, CELL_GAP = 8, GRID_PAD = 60;
    UTIL
    ============================================================ */
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function defaultBoxName(){
+  let maxN = 0;
+  state.boxes.forEach(b=>{
+    const m = String(b.name).match(/^Box\s+(\d+)$/i);
+    if(m) maxN = Math.max(maxN, parseInt(m[1],10));
+  });
+  return `Box ${maxN + 1}`;
+}
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function markDirty(){ dirty = true; updateGhStatus(); }
 function saveLocalDraft(){ localStorage.setItem('inventory_draft', JSON.stringify(state)); }
@@ -536,7 +547,7 @@ function openBoxForm(box){
   const panel = document.getElementById('box-form-panel');
   panel.innerHTML = `
     <h3 style="margin:0 0 14px;font-size:15px;">${editing?'Edit box':'Add box'}</h3>
-    <div class="form-row"><label>Box name</label><input id="bf-name" value="${editing?escapeAttr(box.name):''}"></div>
+    <div class="form-row"><label>Box name</label><input id="bf-name" value="${editing?escapeAttr(box.name):escapeAttr(defaultBoxName())}"></div>
     <div class="form-grid">
       <div class="form-row"><label>Columns (width, X)</label><input id="bf-cols" type="number" min="1" value="${editing?box.cols:8}"></div>
       <div class="form-row"><label>Rows (height, Y)</label><input id="bf-rows" type="number" min="1" value="${editing?box.rows:7}"></div>
@@ -703,7 +714,7 @@ function openComponentModal(comp, boxId, row, col){
   modalIsNew = !comp;
   modalComponent = comp || {
     id: null, boxId, row, col,
-    name:'', type:'Resistor', value:'', package:'', amount:1,
+    name:'', type:defaultNewType, value:'', package:'', amount:1,
     manufacturer:'', description:'', purchaseDate: todayISO(), color: ''
   };
   document.getElementById('modal-head-title').textContent = modalIsNew ? 'New component' : (modalComponent.name || 'Component');
@@ -1055,14 +1066,19 @@ function renderSheet(){
         sel.addEventListener('change', ()=>{ comp.type = sel.value; markDirty(); saveLocalDraft(); renderGrid(); maybeResort(); });
         td.appendChild(sel);
       } else {
-        td.contentEditable = 'true';
+        td.contentEditable = 'false';
         if(col.key==='amount'){
           const n = Number(comp.amount);
           td.textContent = (comp.amount!=='' && comp.amount!==undefined && !isNaN(n) && n>999) ? '999+' : (comp.amount ?? '');
         } else {
           td.textContent = comp[col.key] ?? '';
         }
+        td.addEventListener('dblclick', ()=>{
+          td.contentEditable = 'true';
+          td.focus();
+        });
         td.addEventListener('blur', ()=>{
+          td.contentEditable = 'false';
           const raw = td.textContent.trim();
           if(col.key==='amount'){
             const deltaMatch = raw.match(/^([+-])\s*(\d+(?:\.\d+)?)$/);
@@ -1133,7 +1149,10 @@ document.getElementById('sheet-group-box').addEventListener('change', (e)=>{ she
 document.addEventListener('keydown', (e)=>{
   if(!document.getElementById('sheet-wrap').classList.contains('active')) return;
   const key = e.key.toLowerCase();
+  const activeEl = document.activeElement;
+  const isActivelyEditing = activeEl && activeEl.tagName==='TD' && activeEl.contentEditable==='true';
   if((e.ctrlKey||e.metaKey) && key==='c'){
+    if(isActivelyEditing) return; // let native text copy work while genuinely mid-edit
     if(!sheetSelAnchor) return;
     const rows = sortedSheetRows();
     const comp = rows[sheetSelAnchor.r];
@@ -1146,6 +1165,7 @@ document.addEventListener('keydown', (e)=>{
     sheetClipboard = { value: val, colType: col.type };
     e.preventDefault();
   } else if((e.ctrlKey||e.metaKey) && key==='v'){
+    if(isActivelyEditing) return; // let native paste work while genuinely mid-edit
     if(!sheetClipboard) return;
     const cells = sheetCellsInRange();
     if(cells.length===0) return;
@@ -1166,6 +1186,19 @@ document.addEventListener('keydown', (e)=>{
       }
     });
     markDirty(); saveLocalDraft(); renderSheet(); renderGrid();
+  } else if(key==='delete' || key==='backspace'){
+    if(isActivelyEditing) return; // let normal text deletion happen while actually typing
+    const cells = sheetCellsInRange();
+    if(cells.length===0) return;
+    e.preventDefault();
+    const rows = sortedSheetRows();
+    cells.forEach(({r,c})=>{
+      const comp = rows[r], col = SHEET_COLS[c];
+      if(!comp || !col) return;
+      if(col.type==='select' || col.type==='boxselect') return; // no sensible "empty" for dropdown columns
+      comp[col.key] = '';
+    });
+    markDirty(); saveLocalDraft(); renderSheet(); renderGrid();
   }
 });
 
@@ -1173,7 +1206,7 @@ document.getElementById('btn-sheet-add').addEventListener('click', ()=>{
   if(state.boxes.length===0){ alert('Add a box first.'); return; }
   const newComp = {
     id: uid(), boxId: state.boxes[0].id, row:0, col:0,
-    name:'', type:'Resistor', value:'', package:'', amount:1,
+    name:'', type:defaultNewType, value:'', package:'', amount:1,
     manufacturer:'', description:'', purchaseDate: todayISO(), color:''
   };
   state.components.push(newComp);
@@ -1407,6 +1440,11 @@ function init(){
   updateGhStatus();
   renderSidebar();
   renderGrid();
+
+  const defaultTypeSel = document.getElementById('default-type');
+  defaultTypeSel.innerHTML = COMPONENT_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');
+  defaultTypeSel.value = defaultNewType;
+  defaultTypeSel.addEventListener('change', ()=>{ defaultNewType = defaultTypeSel.value; });
 
   if(gh.owner && gh.repo && gh.token){
     loadFromGithub(true);
