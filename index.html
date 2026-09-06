@@ -246,7 +246,7 @@
   .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
   /* ---------- Batch sheet ---------- */
-  #sheet-wrap{ flex:1; overflow: auto; display:none; padding: 16px; }
+  #sheet-wrap{ flex:1; min-height:0; overflow: auto; display:none; padding: 16px; }
   #sheet-wrap.active{ display:block; }
   #canvas-wrap.hidden{ display:none; }
   table#sheet{ border-collapse: collapse; width: max-content; min-width: 100%; font-size: 12.5px; }
@@ -271,6 +271,7 @@
   table#sheet .sheet-del{ color: var(--ink-faint); cursor:pointer; padding: 7px 10px; text-align:center; }
   table#sheet .sheet-del:hover{ color: var(--red); }
   #sheet-actions{ display:flex; gap:8px; margin-top:12px; }
+  table#sheet td.sheet-selected{ outline: 2px solid var(--amber); outline-offset:-2px; background: var(--amber-dim); }
 
   /* ---------- GitHub panel ---------- */
   #gh-panel-backdrop{ position:fixed; inset:0; background: rgba(6,10,8,.55); display:none; align-items:center; justify-content:center; z-index:110; }
@@ -332,6 +333,19 @@
     </div>
 
     <div id="sheet-wrap">
+      <div id="sheet-controls" style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+        <label style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;">Sort by</label>
+        <select id="sheet-sort-field" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:6px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;">
+          <option value="none">None</option>
+          <option value="value">Value / Name</option>
+          <option value="package">Package</option>
+        </select>
+        <button class="btn btn-small" id="sheet-sort-dir">▲ Ascending</button>
+        <label style="font-size:12.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="sheet-group-box"> Group by box
+        </label>
+        <span style="font-size:11.5px;color:var(--ink-faint);margin-left:auto;">Click a cell, Ctrl/Cmd+C to copy · drag to select a range, Ctrl/Cmd+V to fill</span>
+      </div>
       <table id="sheet">
         <thead><tr id="sheet-head"></tr></thead>
         <tbody id="sheet-body"></tbody>
@@ -819,19 +833,53 @@ document.getElementById('btn-delete-component').addEventListener('click', ()=>{
    ============================================================ */
 const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
+
+function naturalCompare(a,b){
+  a = String(a ?? ''); b = String(b ?? '');
+  const re = /(\d+(?:\.\d+)?)|(\D+)/g;
+  const ax = a.match(re) || [], bx = b.match(re) || [];
+  const len = Math.max(ax.length, bx.length);
+  for(let i=0;i<len;i++){
+    const av = ax[i], bv = bx[i];
+    if(av===undefined) return -1;
+    if(bv===undefined) return 1;
+    const an = parseFloat(av), bn = parseFloat(bv);
+    if(!isNaN(an) && !isNaN(bn) && an!==bn) return an-bn;
+    if(av!==bv) return av<bv ? -1 : 1;
+  }
+  return 0;
+}
+function fieldMatchScore(fieldVal, q){
+  const s = (fieldVal||'').toString().toLowerCase();
+  if(!s.includes(q)) return Infinity;
+  if(s===q) return 0;
+  if(s.startsWith(q)) return 1;
+  return 2;
+}
+
 searchInput.addEventListener('input', ()=>{
   const q = searchInput.value.trim().toLowerCase();
   if(!q){ searchResults.classList.remove('open'); return; }
   const fields = ['name','type','value','package','manufacturer','description'];
-  const matches = state.components.filter(c=> fields.some(f => (c[f]||'').toString().toLowerCase().includes(q)) );
+  const matches = state.components
+    .map(c => ({ c, score: Math.min(...fields.map(f=>fieldMatchScore(c[f], q))) }))
+    .filter(x => x.score !== Infinity)
+    .sort((x,y)=>{
+      if(x.score !== y.score) return x.score - y.score;
+      const pc = naturalCompare(x.c.package, y.c.package);
+      if(pc !== 0) return pc;
+      return naturalCompare(x.c.value || x.c.name, y.c.value || y.c.name);
+    })
+    .map(x => x.c);
   if(matches.length===0){
     searchResults.innerHTML = `<div class="sr-empty">Nothing found</div>`;
   } else {
     searchResults.innerHTML = matches.slice(0,40).map(c=>{
       const box = getBox(c.boxId);
+      const amt = (c.amount===undefined || c.amount==='') ? 0 : c.amount;
       return `<div class="sr-item" data-id="${c.id}">
-        <div class="sr-name">${escapeHtml(c.name)} ${c.value?('· '+escapeHtml(c.value)):''} ${c.package?('· '+escapeHtml(c.package)):''}</div>
-        <div class="sr-sub">${box?escapeHtml(box.name):'—'} · col ${c.col}, row ${c.row} · ${c.type||''}</div>
+        <div class="sr-name">${escapeHtml(c.name||'')} ${c.value?('· '+escapeHtml(c.value)):''} ${c.package?('· '+escapeHtml(c.package)):''}</div>
+        <div class="sr-sub">${box?escapeHtml(box.name):'—'} · col ${c.col}, row ${c.row} · ${c.type||''} · ${amt} left</div>
       </div>`;
     }).join('');
     searchResults.querySelectorAll('.sr-item').forEach(item=>{
@@ -904,15 +952,88 @@ const SHEET_COLS = [
   {key:'purchaseDate', label:'Purchase date', type:'text'},
 ];
 
+let sheetSort = { field:'none', dir:'asc', groupByBox:false };
+let sheetSelAnchor = null, sheetSelCurrent = null, sheetSelDragging = false;
+let sheetClipboard = null;
+
+function parseEngineeringValue(str){
+  if(!str) return null;
+  const m = String(str).trim().match(/^(-?[\d.]+)\s*([a-zA-Zµ]*)/);
+  if(!m) return null;
+  const num = parseFloat(m[1]);
+  if(isNaN(num)) return null;
+  const prefixMap = { p:1e-12, n:1e-9, u:1e-6, 'µ':1e-6, m:1e-3, k:1e3, K:1e3, M:1e6, G:1e9 };
+  const prefixChar = m[2] ? m[2][0] : '';
+  const mult = (prefixChar in prefixMap) ? prefixMap[prefixChar] : 1;
+  return num * mult;
+}
+function comparePackage(a,b){
+  const pa = parseInt(String(a||'').replace(/\D/g,''), 10);
+  const pb = parseInt(String(b||'').replace(/\D/g,''), 10);
+  const na = isNaN(pa), nb = isNaN(pb);
+  if(na && nb) return String(a||'').localeCompare(String(b||''));
+  if(na) return 1;
+  if(nb) return -1;
+  return pa - pb;
+}
+function compareValueOrName(a,b){
+  const aRCL = RCL_TYPES.has(a.type), bRCL = RCL_TYPES.has(b.type);
+  if(aRCL && bRCL){
+    const av = parseEngineeringValue(a.value), bv = parseEngineeringValue(b.value);
+    if(av===null && bv===null) return 0;
+    if(av===null) return 1;
+    if(bv===null) return -1;
+    return av - bv;
+  }
+  if(!aRCL && !bRCL){
+    return (a.name||'').toLowerCase().localeCompare((b.name||'').toLowerCase());
+  }
+  return aRCL ? -1 : 1;
+}
+function sheetComparator(a,b){
+  if(sheetSort.groupByBox){
+    const ia = state.boxes.findIndex(bx=>bx.id===a.boxId);
+    const ib = state.boxes.findIndex(bx=>bx.id===b.boxId);
+    if(ia !== ib) return ia - ib;
+  }
+  let cmp = 0;
+  if(sheetSort.field==='value') cmp = compareValueOrName(a,b);
+  else if(sheetSort.field==='package') cmp = comparePackage(a.package, b.package);
+  if(sheetSort.field!=='none' && sheetSort.dir==='desc') cmp = -cmp;
+  return cmp;
+}
+function sortedSheetRows(){ return [...state.components].sort(sheetComparator); }
+
+function sheetCellsInRange(){
+  if(!sheetSelAnchor || !sheetSelCurrent) return [];
+  const r1 = Math.min(sheetSelAnchor.r, sheetSelCurrent.r), r2 = Math.max(sheetSelAnchor.r, sheetSelCurrent.r);
+  const c1 = Math.min(sheetSelAnchor.c, sheetSelCurrent.c), c2 = Math.max(sheetSelAnchor.c, sheetSelCurrent.c);
+  const out = [];
+  for(let r=r1;r<=r2;r++) for(let c=c1;c<=c2;c++) out.push({r,c});
+  return out;
+}
+function highlightSheetSelection(){
+  document.querySelectorAll('#sheet td.sheet-selected').forEach(td=>td.classList.remove('sheet-selected'));
+  sheetCellsInRange().forEach(({r,c})=>{
+    const td = document.querySelector(`#sheet td[data-r="${r}"][data-c="${c}"]`);
+    if(td) td.classList.add('sheet-selected');
+  });
+}
+function maybeResort(){
+  if(sheetSort.field!=='none' || sheetSort.groupByBox) renderSheet();
+}
+
 function renderSheet(){
   const head = document.getElementById('sheet-head');
   head.innerHTML = SHEET_COLS.map(c=>`<th>${c.label}</th>`).join('') + '<th></th>';
   const body = document.getElementById('sheet-body');
   body.innerHTML = '';
-  state.components.forEach(comp=>{
+  const rows = sortedSheetRows();
+  rows.forEach((comp, rIdx)=>{
     const tr = document.createElement('tr');
-    SHEET_COLS.forEach(col=>{
+    SHEET_COLS.forEach((col, cIdx)=>{
       const td = document.createElement('td');
+      td.dataset.r = rIdx; td.dataset.c = cIdx;
       if(col.type==='boxselect'){
         const sel = document.createElement('select');
         state.boxes.forEach(b=>{
@@ -921,7 +1042,7 @@ function renderSheet(){
           if(b.id===comp.boxId) opt.selected = true;
           sel.appendChild(opt);
         });
-        sel.addEventListener('change', ()=>{ comp.boxId = sel.value; markDirty(); saveLocalDraft(); });
+        sel.addEventListener('change', ()=>{ comp.boxId = sel.value; markDirty(); saveLocalDraft(); renderGrid(); maybeResort(); });
         td.appendChild(sel);
       } else if(col.type==='select'){
         const sel = document.createElement('select');
@@ -931,21 +1052,60 @@ function renderSheet(){
           if(t===comp.type) opt.selected = true;
           sel.appendChild(opt);
         });
-        sel.addEventListener('change', ()=>{ comp.type = sel.value; markDirty(); saveLocalDraft(); renderGrid(); });
+        sel.addEventListener('change', ()=>{ comp.type = sel.value; markDirty(); saveLocalDraft(); renderGrid(); maybeResort(); });
         td.appendChild(sel);
       } else {
         td.contentEditable = 'true';
-        td.textContent = comp[col.key] ?? '';
+        if(col.key==='amount'){
+          const n = Number(comp.amount);
+          td.textContent = (comp.amount!=='' && comp.amount!==undefined && !isNaN(n) && n>999) ? '999+' : (comp.amount ?? '');
+        } else {
+          td.textContent = comp[col.key] ?? '';
+        }
         td.addEventListener('blur', ()=>{
-          let v = td.textContent.trim();
-          if(col.type==='number') v = v===''? '' : Number(v);
-          comp[col.key] = v;
-          markDirty(); saveLocalDraft();
-          if(col.key==='name') document.getElementById('modal-head-title').textContent = comp.name;
-          renderGrid();
+          const raw = td.textContent.trim();
+          if(col.key==='amount'){
+            const deltaMatch = raw.match(/^([+-])\s*(\d+(?:\.\d+)?)$/);
+            let newVal;
+            if(deltaMatch){
+              const sign = deltaMatch[1]==='-' ? -1 : 1;
+              newVal = (Number(comp.amount)||0) + sign*parseFloat(deltaMatch[2]);
+            } else if(raw===''){
+              newVal = '';
+            } else if(!isNaN(Number(raw))){
+              newVal = Number(raw);
+            } else {
+              newVal = Number(comp.amount)||0;
+            }
+            if(newVal !== '' && newVal <= 0){
+              newVal = Math.max(0, newVal);
+              alert(`You're out of stock: "${comp.name || comp.value || comp.package || 'this component'}" is now at ${newVal}.`);
+            }
+            comp.amount = newVal;
+            td.textContent = (newVal!=='' && newVal>999) ? '999+' : String(newVal);
+          } else {
+            let v = raw;
+            if(col.type==='number') v = v===''? '' : Number(v);
+            comp[col.key] = v;
+            if(col.key==='name') document.getElementById('modal-head-title').textContent = comp.name;
+          }
+          markDirty(); saveLocalDraft(); renderGrid();
+          maybeResort();
         });
         td.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); td.blur(); } });
       }
+
+      td.addEventListener('mousedown', (e)=>{
+        if(e.button!==0) return;
+        sheetSelAnchor = { r:rIdx, c:cIdx };
+        sheetSelCurrent = { r:rIdx, c:cIdx };
+        sheetSelDragging = true;
+        highlightSheetSelection();
+      });
+      td.addEventListener('mouseenter', ()=>{
+        if(sheetSelDragging){ sheetSelCurrent = { r:rIdx, c:cIdx }; highlightSheetSelection(); }
+      });
+
       tr.appendChild(td);
     });
     const delTd = document.createElement('td');
@@ -960,6 +1120,55 @@ function renderSheet(){
     body.appendChild(tr);
   });
 }
+window.addEventListener('mouseup', ()=>{ sheetSelDragging = false; });
+
+document.getElementById('sheet-sort-field').addEventListener('change', (e)=>{ sheetSort.field = e.target.value; renderSheet(); });
+document.getElementById('sheet-sort-dir').addEventListener('click', (e)=>{
+  sheetSort.dir = sheetSort.dir==='asc' ? 'desc' : 'asc';
+  e.target.textContent = sheetSort.dir==='asc' ? '▲ Ascending' : '▼ Descending';
+  renderSheet();
+});
+document.getElementById('sheet-group-box').addEventListener('change', (e)=>{ sheetSort.groupByBox = e.target.checked; renderSheet(); });
+
+document.addEventListener('keydown', (e)=>{
+  if(!document.getElementById('sheet-wrap').classList.contains('active')) return;
+  const key = e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey) && key==='c'){
+    if(!sheetSelAnchor) return;
+    const rows = sortedSheetRows();
+    const comp = rows[sheetSelAnchor.r];
+    const col = SHEET_COLS[sheetSelAnchor.c];
+    if(!comp || !col) return;
+    let val;
+    if(col.type==='boxselect') val = comp.boxId;
+    else if(col.type==='select') val = comp.type;
+    else val = comp[col.key];
+    sheetClipboard = { value: val, colType: col.type };
+    e.preventDefault();
+  } else if((e.ctrlKey||e.metaKey) && key==='v'){
+    if(!sheetClipboard) return;
+    const cells = sheetCellsInRange();
+    if(cells.length===0) return;
+    e.preventDefault();
+    const rows = sortedSheetRows();
+    cells.forEach(({r,c})=>{
+      const comp = rows[r], col = SHEET_COLS[c];
+      if(!comp || !col) return;
+      if(col.type==='boxselect'){
+        if(state.boxes.some(b=>b.id===sheetClipboard.value)) comp.boxId = sheetClipboard.value;
+      } else if(col.type==='select'){
+        const match = COMPONENT_TYPES.find(t=>t.toLowerCase()===String(sheetClipboard.value).toLowerCase());
+        if(match) comp.type = match;
+      } else if(col.key==='amount'){
+        comp.amount = sheetClipboard.value;
+      } else {
+        comp[col.key] = col.type==='number' ? (Number(sheetClipboard.value) || sheetClipboard.value) : sheetClipboard.value;
+      }
+    });
+    markDirty(); saveLocalDraft(); renderSheet(); renderGrid();
+  }
+});
+
 document.getElementById('btn-sheet-add').addEventListener('click', ()=>{
   if(state.boxes.length===0){ alert('Add a box first.'); return; }
   const newComp = {
@@ -1083,6 +1292,28 @@ async function saveToGithub(silent){
       headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
       body: JSON.stringify(body)
     });
+    if(res.status===409){
+      const choice = confirm(
+        "Someone else (maybe your other PC) saved changes to this file after you last loaded it.\n\n" +
+        "Click OK to overwrite their changes with what you have here.\n" +
+        "Click Cancel to discard your changes here and load their latest version instead."
+      );
+      if(choice){
+        // Re-fetch the current sha and force our version through.
+        const latest = await fetch(`${ghApiBase()}?ref=${encodeURIComponent(gh.branch)}&_=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Authorization': `Bearer ${gh.token}`, 'Accept':'application/vnd.github+json' }
+        });
+        if(latest.ok){
+          const latestJson = await latest.json();
+          ghFileSha = latestJson.sha;
+          return saveToGithub(silent); // retry once with the fresh sha
+        }
+      } else {
+        await loadFromGithub(false);
+      }
+      return;
+    }
     if(!res.ok){
       const errJson = await res.json().catch(()=>({}));
       throw new Error(errJson.message || `GitHub responded ${res.status}`);
