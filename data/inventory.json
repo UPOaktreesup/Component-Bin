@@ -1179,7 +1179,7 @@
       "value": "",
       "package": "SOD-123",
       "amount": 10,
-      "manufacturer": "",
+      "manufacturer": "Texas Instruments",
       "description": "4.3V general-purpose Zener diode",
       "purchaseDate": "2026-09-06",
       "color": ""
@@ -1194,7 +1194,7 @@
       "value": "",
       "package": "SOT23-5",
       "amount": 10,
-      "manufacturer": "",
+      "manufacturer": "Texas Instruments",
       "description": "200-mA Low-Dropout Regulator for Portable Devices",
       "purchaseDate": "2026-09-06",
       "color": ""
@@ -1209,7 +1209,7 @@
       "value": "",
       "package": "SOIC-16",
       "amount": 4,
-      "manufacturer": "",
+      "manufacturer": "Texas Instruments",
       "description": "8-Bit Parallel-Out Serial Shift Registers",
       "purchaseDate": "2026-09-06",
       "color": ""
@@ -1224,7 +1224,7 @@
       "value": "",
       "package": "SOIC-16",
       "amount": 1,
-      "manufacturer": "",
+      "manufacturer": "Texas Instruments",
       "description": "CMOS Logic 3-to-8 Line Decoder Demultiplexer",
       "purchaseDate": "2026-09-06",
       "color": ""
@@ -1239,8 +1239,23 @@
       "value": "",
       "package": "SOIC-16",
       "amount": 1,
-      "manufacturer": "",
+      "manufacturer": "Texas Instruments",
       "description": "8-bit serial-in, parallel-out shift register",
+      "purchaseDate": "2026-09-06",
+      "color": ""
+    },
+    {
+      "id": "mtphx7esl3pa22",
+      "boxId": "mtparxieeyphc2",
+      "row": 2,
+      "col": 4,
+      "name": "LM358PSR",
+      "type": "IC",
+      "value": "",
+      "package": "SOIC-8",
+      "amount": 1,
+      "manufacturer": "Texas Instruments",
+      "description": "Dual, 30-V, 700-kHz operational amplifier",
       "purchaseDate": "2026-09-06",
       "color": ""
     }
