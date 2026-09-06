@@ -11,6 +11,12 @@
       "name": "Box 2",
       "rows": 7,
       "cols": 8
+    },
+    {
+      "id": "mtpj8rcgn3osav",
+      "name": "Box 3",
+      "rows": 7,
+      "cols": 8
     }
   ],
   "components": [
@@ -457,7 +463,7 @@
       "name": "",
       "type": "Resistor",
       "value": "13.3k",
-      "package": "0805,0402",
+      "package": "0402,0805",
       "amount": 20,
       "manufacturer": "UNI-ROYAL",
       "description": "",
@@ -547,7 +553,7 @@
       "name": "",
       "type": "Resistor",
       "value": "56k",
-      "package": "0805,0402",
+      "package": "0402,0805",
       "amount": 20,
       "manufacturer": "UNI-ROYAL",
       "description": "",
