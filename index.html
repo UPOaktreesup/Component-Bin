@@ -1045,6 +1045,14 @@ function maybeResort(){
   if(sheetSort.field!=='none' || sheetSort.groupByBox) renderSheet();
 }
 
+function syncSheetHeaderWidth(){
+  const bodyScroll = document.getElementById('sheet-body-scroll');
+  const headerScroll = document.getElementById('sheet-header-scroll');
+  const sbw = bodyScroll.offsetWidth - bodyScroll.clientWidth;
+  headerScroll.style.paddingRight = sbw + 'px';
+}
+window.addEventListener('resize', syncSheetHeaderWidth);
+
 function renderSheet(){
   const colgroupHtml = SHEET_COLS.map(c=>`<col style="width:${c.width}px">`).join('') + '<col style="width:36px">';
   document.getElementById('sheet-head-colgroup').innerHTML = colgroupHtml;
@@ -1150,6 +1158,7 @@ function renderSheet(){
     tr.appendChild(delTd);
     body.appendChild(tr);
   });
+  syncSheetHeaderWidth();
 }
 window.addEventListener('mouseup', ()=>{ sheetSelDragging = false; });
 
