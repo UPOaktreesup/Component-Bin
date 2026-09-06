@@ -246,16 +246,19 @@
   .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
   /* ---------- Batch sheet ---------- */
-  #sheet-wrap{ flex:1; min-height:0; overflow: auto; display:none; padding: 16px; }
-  #sheet-wrap.active{ display:block; }
+  #sheet-wrap{ flex:1; min-height:0; display:none; flex-direction:column; padding: 16px; }
+  #sheet-wrap.active{ display:flex; }
+  #sheet-header-scroll{ overflow:hidden; flex-shrink:0; }
+  #sheet-body-scroll{ flex:1; min-height:0; overflow:auto; }
   #canvas-wrap.hidden{ display:none; }
-  table#sheet{ border-collapse: separate; border-spacing:0; table-layout: fixed; width: max-content; min-width: 100%; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; }
-  table#sheet th{
-    position: sticky; top:0; background: var(--panel-2); color: var(--ink-dim);
+  table#sheet, table#sheet-head-table{ border-collapse: separate; border-spacing:0; table-layout: fixed; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; }
+  table#sheet{ width: max-content; min-width: 100%; }
+  table#sheet-head-table{ width: max-content; min-width: 100%; }
+  table#sheet-head-table th{
+    background: var(--panel-2); color: var(--ink-dim);
     text-align:center; vertical-align:middle; font-weight:600; padding: 8px 10px; border: 1px solid var(--line);
     font-family:'IBM Plex Mono',monospace; font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space:nowrap;
     overflow:hidden; text-overflow:ellipsis;
-    z-index: 2;
   }
   table#sheet td{
     border: 1px solid var(--line-soft); padding: 0;
@@ -272,7 +275,7 @@
   .field-value select option{ background: var(--panel-2); color: var(--ink); }
   table#sheet .sheet-del{ color: var(--ink-faint); cursor:pointer; padding: 7px 10px; text-align:center; vertical-align:middle; }
   table#sheet .sheet-del:hover{ color: var(--red); }
-  #sheet-actions{ display:flex; gap:8px; margin-top:12px; }
+  #sheet-actions{ display:flex; gap:8px; margin-top:12px; flex-shrink:0; }
   table#sheet td.sheet-selected{ outline: 2px solid var(--amber); outline-offset:-2px; background: var(--amber-dim); }
 
   /* ---------- GitHub panel ---------- */
@@ -337,7 +340,7 @@
     </div>
 
     <div id="sheet-wrap">
-      <div id="sheet-controls" style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+      <div id="sheet-controls" style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;flex-shrink:0;">
         <label style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;">Sort by</label>
         <select id="sheet-sort-field" style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:6px 8px;border-radius:var(--radius);font-size:12.5px;font-family:inherit;">
           <option value="none">None</option>
@@ -350,10 +353,15 @@
         </label>
         <span style="font-size:11.5px;color:var(--ink-faint);margin-left:auto;">Click a cell, Ctrl/Cmd+C to copy · drag to select a range, Ctrl/Cmd+V to fill</span>
       </div>
-      <table id="sheet">
-        <thead><tr id="sheet-head"></tr></thead>
-        <tbody id="sheet-body"></tbody>
-      </table>
+      <div id="sheet-header-scroll">
+        <table id="sheet-head-table"><colgroup id="sheet-head-colgroup"></colgroup><thead><tr id="sheet-head"></tr></thead></table>
+      </div>
+      <div id="sheet-body-scroll">
+        <table id="sheet">
+          <colgroup id="sheet-body-colgroup"></colgroup>
+          <tbody id="sheet-body"></tbody>
+        </table>
+      </div>
       <div id="sheet-actions">
         <button class="btn" id="btn-sheet-add">+ Add component</button>
       </div>
@@ -409,9 +417,9 @@
 /* ============================================================
    STATE
    ============================================================ */
-const COMPONENT_TYPES = ["Resistor","Capacitor","Inductor","MOSFET","Diode","IC","Connector","Other"];
+const COMPONENT_TYPES = ["Resistor","Capacitor","Inductor","Transistors","Diode","IC","Connector","Buttons & Switches","Crystals & Oscillators","Displays","Batteries","Sound Devices","Other"];
 const RCL_TYPES = new Set(["Resistor","Capacitor","Inductor"]);
-const TYPE_ABBR = { Resistor:'RES', Capacitor:'CAP', Inductor:'IND' };
+const TYPE_ABBR = { Resistor:'RES', Capacitor:'CAP', Inductor:'IND', 'Buttons & Switches':'SW', 'Crystals & Oscillators':'XTAL', Displays:'DISP', Batteries:'BATT', 'Sound Devices':'SND' };
 const CELL_COLORS = ["#5e8a72","#b0713f","#7c5a94","#4f7f9e","#a8524a","#4f9484","#b3944a","#707a8a"];
 
 function primaryPlaceholder(type){
@@ -637,8 +645,8 @@ function renderGrid(){
         const customTextColor = comp.color ? contrastTextColor(comp.color) : null;
         const primaryStyle = customTextColor ? `style="fill:${customTextColor}"` : '';
         const secondaryStyle = customTextColor ? `style="fill:${customTextColor}" fill-opacity="0.72"` : '';
-        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="22" ${primaryStyle}>${escapeXml(truncate(primaryText,16))}</text>`;
-        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="17" ${secondaryStyle}>${escapeXml(truncate(secondaryText,16))}</text>`;
+        cellsHtml += `<text class="cell-primary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy-12}" font-size="22" ${primaryStyle}>${escapeXml(truncate(primaryText,12))}</text>`;
+        cellsHtml += `<text class="cell-secondary" text-anchor="middle" dominant-baseline="middle" x="${cx}" y="${cy+16}" font-size="17" ${secondaryStyle}>${escapeXml(truncate(secondaryText,12))}</text>`;
       }
       cellsHtml += `<text class="cell-coord" x="${x+CELL_W-6}" y="${y+CELL_H-6}" font-size="9" text-anchor="end">${c},${r}</text>`;
       cellsHtml += `</g>`;
@@ -723,9 +731,10 @@ function openComponentModal(comp, boxId, row, col){
   document.getElementById('btn-delete-component').style.display = modalIsNew ? 'none' : 'inline-block';
   document.getElementById('modal-backdrop').classList.add('open');
   renderModalBody();
-  const valueField = FIELD_DEFS.find(fd=>fd.key==='value');
-  const valueEl = document.querySelector('.field-value[data-key="value"]');
-  if(valueEl && valueField) activateFieldEditor(valueEl, valueField);
+  const focusKey = (modalIsNew && !RCL_TYPES.has(modalComponent.type)) ? 'name' : 'value';
+  const focusFieldDef = FIELD_DEFS.find(fd=>fd.key===focusKey);
+  const focusEl = document.querySelector(`.field-value[data-key="${focusKey}"]`);
+  if(focusEl && focusFieldDef) activateFieldEditor(focusEl, focusFieldDef);
 }
 
 function renderModalBody(){
@@ -1037,6 +1046,9 @@ function maybeResort(){
 }
 
 function renderSheet(){
+  const colgroupHtml = SHEET_COLS.map(c=>`<col style="width:${c.width}px">`).join('') + '<col style="width:36px">';
+  document.getElementById('sheet-head-colgroup').innerHTML = colgroupHtml;
+  document.getElementById('sheet-body-colgroup').innerHTML = colgroupHtml;
   const head = document.getElementById('sheet-head');
   head.innerHTML = SHEET_COLS.map(c=>`<th style="width:${c.width}px">${c.label}</th>`).join('') + '<th style="width:36px"></th>';
   const body = document.getElementById('sheet-body');
@@ -1140,6 +1152,30 @@ function renderSheet(){
   });
 }
 window.addEventListener('mouseup', ()=>{ sheetSelDragging = false; });
+
+document.getElementById('sheet-body-scroll').addEventListener('scroll', function(){
+  document.getElementById('sheet-header-scroll').scrollLeft = this.scrollLeft;
+});
+
+document.addEventListener('paste', (e)=>{
+  const t = e.target;
+  if(t && t.tagName==='TD' && t.contentEditable==='true'){
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  }
+});
+document.addEventListener('copy', (e)=>{
+  const t = e.target;
+  if(t && t.tagName==='TD' && t.contentEditable==='true'){
+    const sel = window.getSelection();
+    const text = sel ? sel.toString() : '';
+    if(text){
+      e.preventDefault();
+      e.clipboardData.setData('text/plain', text);
+    }
+  }
+});
 
 document.getElementById('sheet-sort-field').addEventListener('change', (e)=>{ sheetSort.field = e.target.value; renderSheet(); });
 document.getElementById('sheet-sort-dir').addEventListener('click', (e)=>{
