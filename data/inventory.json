@@ -4873,6 +4873,36 @@
       "description": "2-bit bidirectional 400kHz I2C/SMBus voltage level translator",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrcc8ao6yvktk",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 3,
+      "col": 6,
+      "name": "LIS2DW12TR",
+      "type": "IC",
+      "value": "",
+      "package": "LGA-12L",
+      "amount": 2,
+      "manufacturer": "STMicroelectronics",
+      "description": "MEMS digital output motion sensor: high-performance ultralow-power 3-axis \"femto\" accelerometer",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrch0o4sylind",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 3,
+      "col": 7,
+      "name": "LSM6DS3TR-C",
+      "type": "IC",
+      "value": "",
+      "package": "LGA-14L",
+      "amount": 2,
+      "manufacturer": "STMicroelectronics",
+      "description": "iNEMO inertial module: always-on 3D accelerometer and 3D gyroscope",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
