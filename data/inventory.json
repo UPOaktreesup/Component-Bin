@@ -4858,6 +4858,21 @@
       "description": "Quad 0.5pF, 5.5V, ±12kV ESD protection diode for USB, HDMI & High Speed Interfaces",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrcalihzn9s0y",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 3,
+      "col": 5,
+      "name": "PCA9306DQER",
+      "type": "IC",
+      "value": "",
+      "package": "X2SON-8",
+      "amount": 1,
+      "manufacturer": "Texas Instruments",
+      "description": "2-bit bidirectional 400kHz I2C/SMBus voltage level translator",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
