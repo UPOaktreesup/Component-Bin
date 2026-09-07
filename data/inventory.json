@@ -4903,6 +4903,51 @@
       "description": "iNEMO inertial module: always-on 3D accelerometer and 3D gyroscope",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrcla5p5akq5r",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 4,
+      "col": 4,
+      "name": "TPS79318DBVR",
+      "type": "IC",
+      "value": "",
+      "package": "SOT-23-5",
+      "amount": 1,
+      "manufacturer": "Texas Instruments",
+      "description": "200mA low-dropout voltage regulator with enable",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrcneu9m6v3gy",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 4,
+      "col": 5,
+      "name": "LIS2MDLTR",
+      "type": "IC",
+      "value": "",
+      "package": "LGA-12L",
+      "amount": 1,
+      "manufacturer": "STMicroelectronics",
+      "description": "Digital output magnetic sensor: ultralow-power, high-performance 3-axis magnetometer",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrcz8yofar9qk",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 4,
+      "col": 6,
+      "name": "BSZ018NE2LS",
+      "type": "Transistors",
+      "value": "",
+      "package": "TSDSON-8FL",
+      "amount": 6,
+      "manufacturer": "Infineon",
+      "description": "OptiMOS Power MOSFET, 25V",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
