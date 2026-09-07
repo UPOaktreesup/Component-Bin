@@ -252,8 +252,6 @@
   #sheet-body-scroll{ flex:1; min-height:0; overflow:auto; }
   #canvas-wrap.hidden{ display:none; }
   table#sheet, table#sheet-head-table{ border-collapse: separate; border-spacing:0; table-layout: fixed; font-size: 12.5px; font-family:'IBM Plex Mono',monospace; }
-  table#sheet{ width: max-content; min-width: 100%; }
-  table#sheet-head-table{ width: max-content; min-width: 100%; }
   table#sheet-head-table th{
     background: var(--panel-2); color: var(--ink-dim);
     text-align:center; vertical-align:middle; font-weight:600; padding: 8px 10px; border: 1px solid var(--line);
@@ -1054,6 +1052,9 @@ function syncSheetHeaderWidth(){
 window.addEventListener('resize', syncSheetHeaderWidth);
 
 function renderSheet(){
+  const totalW = SHEET_COLS.reduce((sum,c)=>sum+c.width, 0) + 36; // +36 for the delete column
+  document.getElementById('sheet-head-table').style.width = totalW + 'px';
+  document.getElementById('sheet').style.width = totalW + 'px';
   const colgroupHtml = SHEET_COLS.map(c=>`<col style="width:${c.width}px">`).join('') + '<col style="width:36px">';
   document.getElementById('sheet-head-colgroup').innerHTML = colgroupHtml;
   document.getElementById('sheet-body-colgroup').innerHTML = colgroupHtml;
