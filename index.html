@@ -968,7 +968,7 @@ const SHEET_COLS = [
   {key:'package', label:'Package', type:'text', width:100},
   {key:'amount', label:'Amount', type:'number', width:70},
   {key:'manufacturer', label:'Manufacturer', type:'text', width:140},
-  {key:'description', label:'Description', type:'text', width:220},
+  {key:'description', label:'Description', type:'text', width:170},
   {key:'purchaseDate', label:'Purchase date', type:'text', width:110},
 ];
 
@@ -1060,9 +1060,16 @@ function renderSheet(){
   const baseWidths = SHEET_COLS.map(c=>c.width);
   const baseTotal = baseWidths.reduce((s,w)=>s+w, 0) + 36; // +36 delete column
   const extra = (containerWidth > baseTotal) ? (containerWidth - baseTotal) : 0;
-  const descIdx = SHEET_COLS.findIndex(c=>c.key==='description');
   const widths = baseWidths.slice();
-  if(descIdx>=0) widths[descIdx] += extra; // give any leftover space to Description, the one free-text field
+  if(extra > 0){
+    let distributed = 0;
+    baseWidths.forEach((w,i)=>{
+      const add = Math.floor(extra * (w / baseTotal));
+      widths[i] += add;
+      distributed += add;
+    });
+    widths[widths.length-1] += (extra - distributed); // give any rounding remainder to the last column
+  }
   const totalW = widths.reduce((s,w)=>s+w, 0) + 36;
   document.getElementById('sheet-head-table').style.width = totalW + 'px';
   document.getElementById('sheet').style.width = totalW + 'px';
