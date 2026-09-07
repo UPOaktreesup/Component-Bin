@@ -4768,6 +4768,66 @@
       "description": "30V, 150mA Voltage Regulators With Enable",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrbcmriaouv8c",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 1,
+      "col": 7,
+      "name": "TPS259261DRCR",
+      "type": "IC",
+      "value": "",
+      "package": "VSON-10",
+      "amount": 3,
+      "manufacturer": "Texas Instruments",
+      "description": "4.5V to 13.8V, 30mΩ, 2-5A eFuse",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrbggy7umn0po",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 2,
+      "col": 4,
+      "name": "TPS54302DDCR",
+      "type": "IC",
+      "value": "",
+      "package": "SOT-23-6",
+      "amount": 2,
+      "manufacturer": "Texas Instruments",
+      "description": "4.5V to 28V Input, 3A Output, EMI Friendly Synchronous Step-Down Converter",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrbo4i2x2wdy8",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 2,
+      "col": 5,
+      "name": "TPS74401RGWR",
+      "type": "IC",
+      "value": "",
+      "package": "VQFN-20",
+      "amount": 4,
+      "manufacturer": "Texas Instruments",
+      "description": "3A, low-VIN (0.8V), low-noise, high-PSRR, adjustable ultra-low-dropout voltage regulator",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrbr2nwc5hde0",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 2,
+      "col": 6,
+      "name": "OPA1612AIDR",
+      "type": "IC",
+      "value": "",
+      "package": "SOIC-8",
+      "amount": 2,
+      "manufacturer": "Texas Instruments",
+      "description": "SoundPlus™ Audio Operational Amplifier with 1.1nV/√Hz Noise, Low THD and Precision",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
