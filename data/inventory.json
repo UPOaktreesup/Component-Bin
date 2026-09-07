@@ -4948,6 +4948,21 @@
       "description": "OptiMOS Power MOSFET, 25V",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrd35ne2bspz6",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 4,
+      "col": 7,
+      "name": "TDA21490",
+      "type": "IC",
+      "value": "",
+      "package": "PQFN-5*6",
+      "amount": 14,
+      "manufacturer": "Infineon",
+      "description": "OptiMOS Power Stage",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
