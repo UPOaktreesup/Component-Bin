@@ -1049,17 +1049,28 @@ function syncSheetHeaderWidth(){
   const sbw = bodyScroll.offsetWidth - bodyScroll.clientWidth;
   headerScroll.style.paddingRight = sbw + 'px';
 }
-window.addEventListener('resize', syncSheetHeaderWidth);
+window.addEventListener('resize', ()=>{
+  if(document.getElementById('sheet-wrap').classList.contains('active')) renderSheet();
+  else syncSheetHeaderWidth();
+});
 
 function renderSheet(){
-  const totalW = SHEET_COLS.reduce((sum,c)=>sum+c.width, 0) + 36; // +36 for the delete column
+  const bodyScrollEl = document.getElementById('sheet-body-scroll');
+  const containerWidth = bodyScrollEl.clientWidth;
+  const baseWidths = SHEET_COLS.map(c=>c.width);
+  const baseTotal = baseWidths.reduce((s,w)=>s+w, 0) + 36; // +36 delete column
+  const extra = (containerWidth > baseTotal) ? (containerWidth - baseTotal) : 0;
+  const descIdx = SHEET_COLS.findIndex(c=>c.key==='description');
+  const widths = baseWidths.slice();
+  if(descIdx>=0) widths[descIdx] += extra; // give any leftover space to Description, the one free-text field
+  const totalW = widths.reduce((s,w)=>s+w, 0) + 36;
   document.getElementById('sheet-head-table').style.width = totalW + 'px';
   document.getElementById('sheet').style.width = totalW + 'px';
-  const colgroupHtml = SHEET_COLS.map(c=>`<col style="width:${c.width}px">`).join('') + '<col style="width:36px">';
+  const colgroupHtml = SHEET_COLS.map((c,i)=>`<col style="width:${widths[i]}px">`).join('') + '<col style="width:36px">';
   document.getElementById('sheet-head-colgroup').innerHTML = colgroupHtml;
   document.getElementById('sheet-body-colgroup').innerHTML = colgroupHtml;
   const head = document.getElementById('sheet-head');
-  head.innerHTML = SHEET_COLS.map(c=>`<th style="width:${c.width}px">${c.label}</th>`).join('') + '<th style="width:36px"></th>';
+  head.innerHTML = SHEET_COLS.map((c,i)=>`<th style="width:${widths[i]}px">${c.label}</th>`).join('') + '<th style="width:36px"></th>';
   const body = document.getElementById('sheet-body');
   body.innerHTML = '';
   const rows = sortedSheetRows();
