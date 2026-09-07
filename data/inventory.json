@@ -5023,6 +5023,36 @@
       "description": "2-Kbit Microwire Compatible Serial EEPROM",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrdpc08bpi6p0",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 6,
+      "col": 4,
+      "name": "TPS2121",
+      "type": "IC",
+      "value": "",
+      "package": "VQFN-HR-12",
+      "amount": 1,
+      "manufacturer": "Texas Instruments",
+      "description": "2.7V to 22V, 56mΩ, 4.5A, power mux with seamless switchover",
+      "purchaseDate": "2026-09-07",
+      "color": ""
+    },
+    {
+      "id": "mtrdum4q4bb2ks",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 6,
+      "col": 5,
+      "name": "W25X20CLSN1G",
+      "type": "IC",
+      "value": "",
+      "package": "SOIC-8",
+      "amount": 1,
+      "manufacturer": "Winbond",
+      "description": "2.5-3.3V 2Mb Serial Flash Memory with 4KB Sectors and Dual I/O SPI",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
