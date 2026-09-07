@@ -4828,6 +4828,21 @@
       "description": "SoundPlus™ Audio Operational Amplifier with 1.1nV/√Hz Noise, Low THD and Precision",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrc5kjlaxa7jx",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 2,
+      "col": 7,
+      "name": "MT25QL256ABA1EW9-0SIT",
+      "type": "IC",
+      "value": "",
+      "package": "WPDFN-8",
+      "amount": 2,
+      "manufacturer": "Micron",
+      "description": "256Mb, 3V Multiple I/O Serial NOR Flash Memory",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
