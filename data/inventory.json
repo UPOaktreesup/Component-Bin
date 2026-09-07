@@ -5008,6 +5008,21 @@
       "description": "Highly Integrated Full Featured Hi-Speed USB 2.0 ULPI Transceiver",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrdn14ux85x0u",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 5,
+      "col": 7,
+      "name": "93LC56BT-I/OT",
+      "type": "IC",
+      "value": "",
+      "package": "SOT23-6",
+      "amount": 1,
+      "manufacturer": "Microchip",
+      "description": "2-Kbit Microwire Compatible Serial EEPROM",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
