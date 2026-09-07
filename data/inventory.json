@@ -4843,6 +4843,21 @@
       "description": "256Mb, 3V Multiple I/O Serial NOR Flash Memory",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrc6tmgn9h36y",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 3,
+      "col": 4,
+      "name": "TPD4E05U06DQAR",
+      "type": "Diode",
+      "value": "",
+      "package": "USON-10",
+      "amount": 3,
+      "manufacturer": "Texas Instruments",
+      "description": "Quad 0.5pF, 5.5V, ±12kV ESD protection diode for USB, HDMI & High Speed Interfaces",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
