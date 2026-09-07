@@ -4978,6 +4978,21 @@
       "description": "USB3.1 to SATA 6Gb/s Bridge Controller for Type-C Connector",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrdbzk2m21tb8",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 5,
+      "col": 5,
+      "name": "CAT8111STBI-GT3",
+      "type": "IC",
+      "value": "",
+      "package": "SOT-143",
+      "amount": 1,
+      "manufacturer": "Onsemi",
+      "description": "4-Pin Microprocessor Power Supply Supervisor with Manual Reset",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
