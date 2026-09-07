@@ -4993,6 +4993,21 @@
       "description": "4-Pin Microprocessor Power Supply Supervisor with Manual Reset",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrdeptyeni5fh",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 5,
+      "col": 6,
+      "name": "USB3320C-EZK",
+      "type": "IC",
+      "value": "",
+      "package": "QFN-32",
+      "amount": 1,
+      "manufacturer": "Microchip",
+      "description": "Highly Integrated Full Featured Hi-Speed USB 2.0 ULPI Transceiver",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
