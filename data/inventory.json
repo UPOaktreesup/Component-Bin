@@ -4723,6 +4723,21 @@
       "description": "",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mtrat70qw7jxg3",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 5,
+      "col": 3,
+      "name": "",
+      "type": "Capacitor",
+      "value": "35V 105",
+      "package": "0402",
+      "amount": 50,
+      "manufacturer": "Samsung",
+      "description": "",
+      "purchaseDate": "2026-09-07",
+      "color": ""
     }
   ]
 }
