@@ -5098,6 +5098,21 @@
       "description": "12A 180KHz 40V Buck DC to DC Converter",
       "purchaseDate": "2026-09-08",
       "color": ""
+    },
+    {
+      "id": "mts683r9wu9i8a",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 0,
+      "col": 2,
+      "name": "SH1.0",
+      "type": "Connector",
+      "value": "",
+      "package": "SH1.0",
+      "amount": 9,
+      "manufacturer": "",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
     }
   ]
 }
