@@ -420,6 +420,19 @@ const RCL_TYPES = new Set(["Resistors","Capacitors","Inductors","Crystals & Osci
 const TYPE_ABBR = { Resistors:'RES', Capacitors:'CAP', Inductors:'IND', 'Buttons & Switches':'SW', 'Crystals & Oscillators':'XTAL', Displays:'DISP', Batteries:'BATT', 'Sound Devices':'SND' };
 const CELL_COLORS = ["#5e8a72","#b0713f","#7c5a94","#4f7f9e","#a8524a","#4f9484","#b3944a","#707a8a"];
 
+// Old singular type names (pre-rename) -> current plural names. Repairs existing saved data on load.
+const TYPE_MIGRATION = {
+  'Resistor':'Resistors', 'Capacitor':'Capacitors', 'Inductor':'Inductors',
+  'Diode':'Diodes', 'IC':'ICs', 'Connector':'Connectors', 'MOSFET':'Transistors'
+};
+function migrateComponentTypes(){
+  let changed = false;
+  state.components.forEach(c=>{
+    if(TYPE_MIGRATION[c.type]){ c.type = TYPE_MIGRATION[c.type]; changed = true; }
+  });
+  return changed;
+}
+
 function primaryPlaceholder(type){
   const abbr = TYPE_ABBR[type] || (type ? type.toUpperCase() : 'UNKNOWN');
   return RCL_TYPES.has(type) ? `${abbr}_NOVAL` : `${abbr}_NONAME`;
@@ -1364,7 +1377,8 @@ async function loadFromGithub(silent){
     const loaded = JSON.parse(decoded);
     state = { boxes: loaded.boxes || [], components: loaded.components || [] };
     currentBoxId = state.boxes[0]?.id || null;
-    dirty = false;
+    const migrated = migrateComponentTypes();
+    dirty = migrated; // if we just repaired old type names, flag it so you remember to save the fix back to GitHub
     saveLocalDraft();
     updateGhStatus();
     resetView();
@@ -1499,6 +1513,7 @@ function init(){
   if(draft){
     try{ state = JSON.parse(draft); } catch(e){}
   }
+  if(migrateComponentTypes()){ saveLocalDraft(); markDirty(); }
   if(state.boxes.length===0){
     // seed with one starter box so the app isn't empty on first run
     state.boxes.push({ id: uid(), name: 'Box 1', rows: 7, cols: 8 });
