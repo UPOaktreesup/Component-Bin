@@ -5053,6 +5053,21 @@
       "description": "2.5-3.3V 2Mb Serial Flash Memory with 4KB Sectors and Dual I/O SPI",
       "purchaseDate": "2026-09-07",
       "color": ""
+    },
+    {
+      "id": "mts5zhif25oc72",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 0,
+      "col": 1,
+      "name": "",
+      "type": "Resistor",
+      "value": "6.3V 477",
+      "package": "7343",
+      "amount": 2,
+      "manufacturer": "Kyocera AVX",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
     }
   ]
 }
