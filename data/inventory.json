@@ -5128,6 +5128,51 @@
       "description": "",
       "purchaseDate": "2026-09-08",
       "color": ""
+    },
+    {
+      "id": "mts6wyw1r0b33d",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 0,
+      "col": 5,
+      "name": "XTAL 24MHz",
+      "type": "Crystals & Oscillators",
+      "value": "",
+      "package": "2016",
+      "amount": 1,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
+    },
+    {
+      "id": "mts6xfl84rbp8z",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 0,
+      "col": 6,
+      "name": "XTAL 16MHz",
+      "type": "Crystals & Oscillators",
+      "value": "",
+      "package": "2016",
+      "amount": 1,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
+    },
+    {
+      "id": "mts6xlcbl9nje2",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 0,
+      "col": 7,
+      "name": "XTAL 12MHz",
+      "type": "Crystals & Oscillators",
+      "value": "",
+      "package": "2520",
+      "amount": 1,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
     }
   ]
 }
