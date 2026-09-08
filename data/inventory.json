@@ -5113,6 +5113,21 @@
       "description": "",
       "purchaseDate": "2026-09-08",
       "color": ""
+    },
+    {
+      "id": "mts6mbsa6bwr13",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 0,
+      "col": 4,
+      "name": "XTAL 25MHz",
+      "type": "Crystals & Oscillators",
+      "value": "",
+      "package": "2016",
+      "amount": 9,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-08",
+      "color": ""
     }
   ]
 }
