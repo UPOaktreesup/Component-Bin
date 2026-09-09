@@ -4493,7 +4493,7 @@
       "type": "Resistors",
       "value": "31.6k",
       "package": "0402",
-      "amount": 50,
+      "amount": 100,
       "manufacturer": "UNI-ROYAL",
       "description": "",
       "purchaseDate": "2026-09-07",
@@ -5411,6 +5411,21 @@
       "amount": 20,
       "manufacturer": "Viking",
       "description": "0.1% Tolerance",
+      "purchaseDate": "2026-09-09",
+      "color": ""
+    },
+    {
+      "id": "mtti25buza3535",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 6,
+      "col": 2,
+      "name": "",
+      "type": "Capacitors",
+      "value": "10V 105",
+      "package": "0402",
+      "amount": 100,
+      "manufacturer": "Samsung",
+      "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
     }
