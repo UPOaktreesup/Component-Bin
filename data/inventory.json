@@ -158,7 +158,7 @@
       "type": "Resistors",
       "value": "75k",
       "package": "0805",
-      "amount": 20,
+      "amount": 50,
       "manufacturer": "Viking",
       "description": "0.5% Tolerance",
       "purchaseDate": "2026-09-04",
