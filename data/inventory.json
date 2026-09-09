@@ -5368,6 +5368,21 @@
       "description": "0.1% Tolerance",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttg1fzh1staxe",
+      "boxId": "mtmhepwwv89gri",
+      "row": 0,
+      "col": 6,
+      "name": "",
+      "type": "Resistors",
+      "value": "71.5k",
+      "package": "1206",
+      "amount": 50,
+      "manufacturer": "UNI-ROYAL",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
