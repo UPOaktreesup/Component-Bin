@@ -5428,6 +5428,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttmekl1q5ap78",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 6,
+      "col": 4,
+      "name": "MT25QU01GBBB8E12-0SIT",
+      "type": "ICs",
+      "value": "",
+      "package": "TPBGA-24",
+      "amount": 8,
+      "manufacturer": "Micron",
+      "description": "High performance multiple input/output, 1Gb, 1.8V, SPI Flash memory device",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
