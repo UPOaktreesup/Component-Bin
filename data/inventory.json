@@ -5218,6 +5218,21 @@
       "description": "33.333333MHz, Wide Temperature AEC-Q100 Oscillator",
       "purchaseDate": "2026-09-08",
       "color": ""
+    },
+    {
+      "id": "mttefshilhrj23",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 1,
+      "col": 7,
+      "name": "OT252050MJBA4SL",
+      "type": "Crystals & Oscillators",
+      "value": "OSC 50MHz",
+      "package": "2520",
+      "amount": 1,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
