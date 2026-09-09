@@ -5278,6 +5278,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttf9p0a7itzur",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 6,
+      "col": 1,
+      "name": "",
+      "type": "Capacitors",
+      "value": "50V 333",
+      "package": "0805",
+      "amount": 50,
+      "manufacturer": "Samsung",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
