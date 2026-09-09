@@ -5293,6 +5293,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttfg8yz2r3t3h",
+      "boxId": "mtmhepwwv89gri",
+      "row": 1,
+      "col": 1,
+      "name": "",
+      "type": "Resistors",
+      "value": "3R",
+      "package": "0805",
+      "amount": 100,
+      "manufacturer": "UNI-ROYAL",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
