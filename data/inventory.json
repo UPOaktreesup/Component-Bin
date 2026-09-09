@@ -5308,6 +5308,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttfjhaio45d37",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 4,
+      "col": 1,
+      "name": "",
+      "type": "Resistors",
+      "value": "137k",
+      "package": "0402",
+      "amount": 50,
+      "manufacturer": "UNI-ROYAL",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
