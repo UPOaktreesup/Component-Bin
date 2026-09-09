@@ -2543,7 +2543,7 @@
       "type": "Capacitors",
       "value": "25V 226",
       "package": "0805",
-      "amount": 50,
+      "amount": 100,
       "manufacturer": "Samsung",
       "description": "",
       "purchaseDate": "2026-09-06",
