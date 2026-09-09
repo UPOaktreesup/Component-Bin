@@ -3713,7 +3713,7 @@
       "type": "Resistors",
       "value": "0R",
       "package": "0402,0402*4",
-      "amount": 20,
+      "amount": 100,
       "manufacturer": "UNI-ROYAL",
       "description": "",
       "purchaseDate": "2026-09-07",
