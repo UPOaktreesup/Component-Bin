@@ -5233,6 +5233,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttejtagxcmble",
+      "boxId": "mtqyyd9v6k5bdp",
+      "row": 2,
+      "col": 4,
+      "name": "X161032768KGD2SI",
+      "type": "Crystals & Oscillators",
+      "value": "32.768kHz",
+      "package": "1610",
+      "amount": 1,
+      "manufacturer": "YXC",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
