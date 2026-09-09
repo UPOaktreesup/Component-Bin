@@ -5248,6 +5248,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttewtmt8vox5x",
+      "boxId": "mtparxieeyphc2",
+      "row": 3,
+      "col": 2,
+      "name": "",
+      "type": "Capacitors",
+      "value": "50V 183",
+      "package": "0805",
+      "amount": 50,
+      "manufacturer": "YAGEO",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
