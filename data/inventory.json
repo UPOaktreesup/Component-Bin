@@ -5398,6 +5398,21 @@
       "description": "0.1% Tolerance",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttg9llfhup2l6",
+      "boxId": "mtmhepwwv89gri",
+      "row": 3,
+      "col": 4,
+      "name": "",
+      "type": "Resistors",
+      "value": "4.7k",
+      "package": "0805",
+      "amount": 20,
+      "manufacturer": "Viking",
+      "description": "0.1% Tolerance",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
