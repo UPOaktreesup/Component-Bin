@@ -5263,6 +5263,21 @@
       "description": "",
       "purchaseDate": "2026-09-09",
       "color": ""
+    },
+    {
+      "id": "mttf1p8s9lhgzc",
+      "boxId": "mtqlidwo7kvm6o",
+      "row": 6,
+      "col": 0,
+      "name": "",
+      "type": "Capacitors",
+      "value": "50V 681",
+      "package": "0805",
+      "amount": 50,
+      "manufacturer": "YAGEO",
+      "description": "",
+      "purchaseDate": "2026-09-09",
+      "color": ""
     }
   ]
 }
