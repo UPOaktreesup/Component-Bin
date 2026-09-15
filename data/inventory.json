@@ -2572,7 +2572,7 @@
       "name": "",
       "type": "Capacitors",
       "value": "50V 473",
-      "package": "0603",
+      "package": "0402,0603",
       "amount": 50,
       "manufacturer": "Samsung",
       "description": "",
